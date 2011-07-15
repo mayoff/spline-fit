@@ -16,6 +16,10 @@ Function.prototype.bindLater = function () {
     return this;
 };
 
+Array.prototype.last = function () {
+    return this[this.length - 1];
+}
+
 function Point(x, y) {
     this.x = x;
     this.y = y;
@@ -40,25 +44,83 @@ Point.interpolate = function () {
     return new Point(x / totalWeight, y / totalWeight);
 };
 
-Fitter = {
-    fitCubicToPoints: function (points) {
-        if (points.length < 2) {
-            return points;
-        } else if (points.length == 2) {
-            return [
-                points[0],
-                Point.interpolate(points[0], 2, points[1], 1),
-                Point.interpolate(points[0], 1, points[1], 2),
-                points[1]
-            ];
-        }
+function Fitter() {
+    // point (x[i], y[i]) is a data point the curve must try to pass through.
+    this.x = [];
+    this.y = [];
 
-        var cubicPoints = points.concat();
-        while (cubicPoints.length % 3 != 1) {
-            cubicPoints.push(points[points.length - 1]);
-        }
-        return cubicPoints;
+    // d[i] is the sum f the straight-line distances between consecutive data points up to and including point i.
+    this.d = [];
+
+    // dmax is sum of the straight-line distances between consecutive data points.
+    this.dmax = 0.0;
+
+    // point (cx[i], cy[i]) is a control point of the fitted Bezier cubics.
+    this.cx = [];
+    this.cy = [];
+}
+
+Fitter.prototype.push = function (x, y) {
+    var dx, dy, d;
+    if (this.x.length > 0) {
+        dx = x - this.x.last();
+        dy = y - this.y.last();
+        d = Math.sqrt(dx*dx + dy*dy);
+        this.d.push(this.d.last() + d);
+    } else {
+        this.d.push(0);
     }
+    this.dmax = this.d.last();
+    this.x.push(x);
+    this.y.push(y);
+};
+
+Fitter.prototype.fit = function () {
+    var x = this.x, y = this.y, l = x.length, u, i, d = this.d, dmax = this.dmax, cx, cy;
+
+    if (l < 4) {
+        // XXX Need a different method to fit the curve.
+        return;
+    }
+
+    u = new Array(l);
+    for (i = 0; i < l; ++i)
+        { u[i] = d[i] / dmax; }
+
+    cx = [ x[0], 0.0, 0.0, x.last() ];
+    cy = [ y[0], 0.0, 0.0, y.last() ];
+
+    this._fitCubic1D(x, u, cx);
+    this._fitCubic1D(y, u, cy);
+
+    this.cx = cx;
+    this.cy = cy;
+};
+
+Fitter.prototype._fitCubic1D = function (x, u, cx) {
+    var i, l = x.length, m00 = 0.0, m01 = 0.0, m10 = 0.0, m11 = 0.0, y0 = 0.0, y1 = 0.0, B0, B1, B2, B3, xi, ui, uim, cx0 = cx[0], cx3 = cx[3];
+
+    for (i = 0; i < l; ++i) {
+        xi = x[i];
+        ui = u[i];
+        uim = 1 - u[i];
+
+        B0 = uim*uim*uim;
+        B1 = 3*ui*uim*uim;
+        B2 = 3*ui*ui*uim;
+        B3 = ui*ui*ui;
+
+        m00 += B1*B1;
+        m01 += B1*B2;
+        m10 += B1*B2;
+        m11 += B2*B2;
+
+        y0 += B1 * (xi - cx0 * B0 - cx3 * B3);
+        y1 += B2 * (xi - cx0 * B0 - cx3 * B3);
+    }
+
+    cx[1] = (m11*y0 - m01*y1)/(m00*m11 - m01*m10);
+    cx[2] = (m10*y0 - m00*y1)/(m01*m10 - m00*m11);
 };
 
 canvasController = {
@@ -66,6 +128,7 @@ canvasController = {
     canvas: document.getElementById('canvas'),
     gc: null,
     points: null,
+    fitter: null,
 
     init: function () {
         bindMethods(this);
@@ -89,7 +152,7 @@ canvasController = {
         this.gc.lineCap = 'round';
         this.gc.fillStyle = 'red';
 
-        this.points = [];
+        this.fitter = new Fitter();
         this.startSegment(this.mousePointForEvent(event));
     }.bindLater(),
 
@@ -103,8 +166,18 @@ canvasController = {
         document.removeEventListener('mousemove', this.mouseDragged);
         document.removeEventListener('mouseup', this.mouseUp);
 
-        var cubicPoints = Fitter.fitCubicToPoints(this.points);
-        this.drawCubic(cubicPoints);
+        var fitter = this.fitter, cx, cy, gc = this.gc;
+
+        fitter.fit();
+        cx = fitter.cx;
+        cy = fitter.cy;
+
+        gc.strokeStyle = 'blue';
+        gc.lineWidth = 2;
+        gc.beginPath();
+        gc.moveTo(cx[0], cy[0]);
+        gc.bezierCurveTo(cx[1], cy[1], cx[2], cy[2], cx[3], cy[3]);
+        gc.stroke();
     }.bindLater(),
 
     startSegment: function (point) {
@@ -112,25 +185,12 @@ canvasController = {
         gc.fillRect(point.x - 1.5, point.y - 1.5, 3, 3);
         gc.beginPath();
         gc.moveTo(point.x, point.y);
-
-        this.points.push(point);
+        this.fitter.push(point.x, point.y);
     },
 
     endSegment: function (point) {
         var gc = this.gc;
         gc.lineTo(point.x, point.y);
-        gc.stroke();
-    },
-
-    drawCubic: function (points) {
-        var gc = this.gc, l, i;
-        gc.strokeStyle = 'blue';
-        gc.lineWidth = 2;
-        gc.beginPath();
-        gc.moveTo(points[0].x, points[0].y);
-        for (i = 1, l = points.length; i < l; i += 3) {
-            gc.bezierCurveTo(points[i].x, points[i].y, points[i+1].x, points[i+1].y, points[i+2].x, points[i+2].y);
-        }
         gc.stroke();
     }
 
