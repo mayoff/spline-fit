@@ -1,4 +1,52 @@
 
+SF = SC.Application.create({
+    ready: function () {
+        this._super();
+        //SF.canvasController.init();
+    }
+});
+
+SF.Canvas = SC.View.extend({
+    tagName: 'canvas',
+    attributeBindings: [ 'width', 'height' ],
+    controller: null,
+
+    init: function () {
+        var self = this;
+        this._super();
+        [ 'on_mousedown', 'on_mousedrag', 'on_mouseup' ].forEach(function (m) {
+            var fn = this[m];
+            this[m] = function (event) { return SC.run(self, fn, event); };
+        }, this);
+    },
+
+    willInsertElement: function () {
+        this._super();
+        this.controller.set('view', this);
+        this.get('element').addEventListener('mousedown', this.on_mousedown);
+    },
+
+    on_mousedown: function (event) {
+        console.log('on_mousedown');
+        document.addEventListener('mousemove', this.on_mousedrag, true);
+        document.addEventListener('mouseup', this.on_mouseup, true);
+        return false;
+    },
+
+    on_mousedrag: function (event) {
+        console.log('on_mousedrag');
+        return false;
+    },
+
+    on_mouseup: function (event) {
+        console.log('on_mouseup');
+        document.removeEventListener('mousemove', this.on_mousedrag, true);
+        document.removeEventListener('mouseup', this.on_mouseup, true);
+        return false;
+    }
+
+});
+
 function bindMethods(object) {
     var k, v;
 
@@ -174,18 +222,28 @@ UnconstrainedFitter.prototype.improveDataParameter = function (i) {
     }
 };
 
-canvasController = {
+SF.set('canvasController', SC.Object.create({
 
-    canvas: document.getElementById('canvas'),
-    gc: null,
+    ready: function () {
+        console.log('SF.canvasController.ready');
+    },
+
+    view: null,
+    canvasBinding: 'view.element',
+    gc: SC.computed(function () {
+        return this.canvas.getContext('2d');
+    }).property('canvas').cacheable(),
     vectors: null,
     fitter: null,
     tracking: false,
 
     init: function () {
         bindMethods(this);
+        /*
+        this.canvas = document.getElementById('canvas');
         this.gc = this.canvas.getContext('2d');
         this.canvas.addEventListener('mousedown', this.mouseDown);
+        */
     },
 
     mouseVectorForEvent: function (event) {
@@ -293,8 +351,6 @@ canvasController = {
         }
     }
 
-};
-
-canvasController.init();
+}));
 
 
