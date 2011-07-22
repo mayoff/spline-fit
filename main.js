@@ -1,47 +1,65 @@
 
-SF = SC.Application.create({
-    ready: function () {
-        this._super();
-        //SF.canvasController.init();
-    }
-});
+SF = SC.Application.create();
 
 SF.Canvas = SC.View.extend({
     tagName: 'canvas',
     attributeBindings: [ 'width', 'height' ],
     controller: null,
+    _tracking: false,
 
     init: function () {
-        var self = this;
         this._super();
-        [ 'on_mousedown', 'on_mousedrag', 'on_mouseup' ].forEach(function (m) {
-            var fn = this[m];
-            this[m] = function (event) { return SC.run(self, fn, event); };
-        }, this);
+        var self = this;
+        ['on_mousedown', 'on_mousedrag', 'on_mouseup'].forEach(function (key) {
+            var fn = self[key];
+            self[key] = function (event) {
+                return SC.run(self, fn, event);
+            };
+        });
     },
 
     willInsertElement: function () {
         this._super();
         this.controller.set('view', this);
-        this.get('element').addEventListener('mousedown', this.on_mousedown);
+        this.element.addEventListener('mousedown', this.on_mousedown);
+    },
+
+    _vectorForEvent: function (event) {
+        var c = this.element, cr = c.getBoundingClientRect();
+        return new Vector(
+            event.clientX - cr.left - c.clientLeft + .5,
+            event.clientY - cr.top - c.clientTop + .5);
     },
 
     on_mousedown: function (event) {
-        console.log('on_mousedown');
+        if (this._tracking || event.button !== 0) {
+            return true;
+        }
         document.addEventListener('mousemove', this.on_mousedrag, true);
         document.addEventListener('mouseup', this.on_mouseup, true);
+        this._tracking = true;
+        this.controller.on_mousedown(this._vectorForEvent(event));
         return false;
     },
 
     on_mousedrag: function (event) {
-        console.log('on_mousedrag');
+        if (!this._tracking) {
+            return true;
+        }
+        this.controller.on_mousedrag(this._vectorForEvent(event));
         return false;
     },
 
     on_mouseup: function (event) {
-        console.log('on_mouseup');
+        if (event.button !== 0) {
+            return true;
+        }
         document.removeEventListener('mousemove', this.on_mousedrag, true);
         document.removeEventListener('mouseup', this.on_mouseup, true);
+        if (this._tracking) {
+            this._tracking = false;
+            this.controller.on_mouseup(this._vectorForEvent(event));
+        }
         return false;
     }
 
@@ -224,27 +242,14 @@ UnconstrainedFitter.prototype.improveDataParameter = function (i) {
 
 SF.set('canvasController', SC.Object.create({
 
-    ready: function () {
-        console.log('SF.canvasController.ready');
-    },
-
     view: null,
     canvasBinding: 'view.element',
-    gc: SC.computed(function () {
-        return this.canvas.getContext('2d');
-    }).property('canvas').cacheable(),
+    gc: function () {
+        return this.canvas ? this.canvas.getContext('2d') : null;
+    }.property('canvas').cacheable(),
     vectors: null,
     fitter: null,
     tracking: false,
-
-    init: function () {
-        bindMethods(this);
-        /*
-        this.canvas = document.getElementById('canvas');
-        this.gc = this.canvas.getContext('2d');
-        this.canvas.addEventListener('mousedown', this.mouseDown);
-        */
-    },
 
     mouseVectorForEvent: function (event) {
         var c = this.canvas, cr = c.getBoundingClientRect();
@@ -253,27 +258,17 @@ SF.set('canvasController', SC.Object.create({
             event.clientY - cr.top - c.clientTop + .5);
     },
 
-    mouseDown: function (event) {
-        if (this.tracking) {
-            return;
-        }
-
-        document.addEventListener('mousemove', this.mouseDragged);
-        document.addEventListener('mouseup', this.mouseUp);
-        this.tracking = true;
+    on_mousedown: function (vector) {
         this.fitter = new UnconstrainedFitter();
-        this.addPoint(this.mouseVectorForEvent(event));
-    }.bindLater(),
+        this.addPoint(vector);
+    },
 
-    mouseDragged: function (event) {
-        this.addPoint(this.mouseVectorForEvent(event));
-    }.bindLater(),
+    on_mousedrag: function (vector) {
+        this.addPoint(vector);
+    },
 
-    mouseUp: function (event) {
-        document.removeEventListener('mousemove', this.mouseDragged);
-        document.removeEventListener('mouseup', this.mouseUp);
-        this.tracking = false;
-    }.bindLater(),
+    on_mouseup: function (event) {
+    },
 
     addPoint: function (point) {
         if (!this.pointIsWorthAdding(point))
