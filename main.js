@@ -65,23 +65,6 @@ SF.Canvas = SC.View.extend({
 
 });
 
-function bindMethods(object) {
-    var k, v;
-
-    for (k in object) {
-        v = object[k];
-        if (typeof(v) == 'function' && v.hasOwnProperty('_markedByBindLater')) {
-            delete v._markedByBindLater;
-            object[k] = v.bind(object);
-        }
-    }
-}
-
-Function.prototype.bindLater = function () {
-    this._markedByBindLater = true;
-    return this;
-};
-
 Array.prototype.last = function () {
     return this[this.length - 1];
 }
