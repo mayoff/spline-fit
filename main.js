@@ -1,4 +1,23 @@
 
+Object.defineProperty(Array.prototype, 'last', {
+    configurable: false,
+    get: function () { return this[this.length - 1]; },
+    set: function (value) { return this[this.length] = value; }
+});
+
+function Vector(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+Vector.prototype.minus = function (rhs) {
+    return new Vector(this.x - rhs.x, this.y - rhs.y);
+};
+
+Vector.prototype.dot = function (rhs) {
+    return this.x * rhs.x + this.y * rhs.y;
+};
+
 SF = SC.Application.create();
 
 SF.Canvas = SC.View.extend({
@@ -65,23 +84,6 @@ SF.Canvas = SC.View.extend({
 
 });
 
-Array.prototype.last = function () {
-    return this[this.length - 1];
-}
-
-function Vector(x, y) {
-    this.x = x;
-    this.y = y;
-}
-
-Vector.prototype.minus = function (rhs) {
-    return new Vector(this.x - rhs.x, this.y - rhs.y);
-};
-
-Vector.prototype.dot = function (rhs) {
-    return this.x * rhs.x + this.y * rhs.y;
-};
-
 function UnconstrainedFitter() {
     // I will try to pass the curve through each (xs[i], ys[i]) in order.
     this.xs = [];
@@ -144,7 +146,7 @@ UnconstrainedFitter.prototype.pickInitialPs = function () {
         lx = x; ly = y;
     }
     this.ps = ps;
-    this.pmax = ps.last();
+    this.pmax = ps.last;
 };
 
 UnconstrainedFitter.prototype.derivativeControlPointsFor = function (cp) {
@@ -156,7 +158,7 @@ UnconstrainedFitter.prototype.derivativeControlPointsFor = function (cp) {
 }
 
 UnconstrainedFitter.prototype.fitAxis = function (xs, ps, pmax) {
-    var i, l = xs.length, x, t, tm, x0 = xs[0], xe = xs.last(),
+    var i, l = xs.length, x, t, tm, x0 = xs[0], xe = xs.last,
         m00 = 0.0, m01 = 0.0, m10 = 0.0, m11 = 0.0, y0 = 0.0, y1 = 0.0, B0, B1, B2, B3;
 
     for (i = 0; i < l; ++i) {
@@ -275,7 +277,7 @@ SF.set('canvasController', SC.Object.create({
         if (this.fitter.xs.length === 0) {
             return true;
         }
-        var dx = point.x - this.fitter.xs.last(), dy = point.y - this.fitter.ys.last();
+        var dx = point.x - this.fitter.xs.last, dy = point.y - this.fitter.ys.last;
         return dx*dx + dy*dy >= 4;
     },
 
