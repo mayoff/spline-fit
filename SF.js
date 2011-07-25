@@ -5,22 +5,9 @@ Object.defineProperty(Array.prototype, 'last', {
     set: function (value) { return this[this.length] = value; }
 });
 
-function Vector(x, y) {
-    this.x = x;
-    this.y = y;
-}
-
-Vector.prototype.minus = function (rhs) {
-    return new Vector(this.x - rhs.x, this.y - rhs.y);
-};
-
-Vector.prototype.dot = function (rhs) {
-    return this.x * rhs.x + this.y * rhs.y;
-};
-
 SF = SC.Application.create();
 
-SF.Canvas = SC.View.extend({
+SF.SplineCanvas = SC.View.extend({
     tagName: 'canvas',
     attributeBindings: [ 'width', 'height' ],
     controller: null,
@@ -45,7 +32,7 @@ SF.Canvas = SC.View.extend({
 
     _vectorForEvent: function (event) {
         var c = this.element, cr = c.getBoundingClientRect();
-        return new Vector(
+        return new SF.Vector(
             event.clientX - cr.left - c.clientLeft + .5,
             event.clientY - cr.top - c.clientTop + .5);
     },
@@ -185,21 +172,21 @@ UnconstrainedFitter.prototype.fitAxis = function (xs, ps, pmax) {
 
 UnconstrainedFitter.prototype.vectorAt = function (p) {
     var t = p / this.pmax, tm = 1 - t, cxs = this.cxs, cys = this.cys;
-    return new Vector(
+    return new SF.Vector(
         tm*tm*tm*cxs[0] + 3*tm*tm*t*cxs[1] + 3*tm*t*t*cxs[2] + t*t*t*cxs[3],
         tm*tm*tm*cys[0] + 3*tm*tm*t*cys[1] + 3*tm*t*t*cys[2] + t*t*t*cys[3]);
 };
 
 UnconstrainedFitter.prototype.derivativeAt = function (p) {
     var t = p / this.pmax, tm = 1 - t, cxs = this.cxs1, cys = this.cys1;
-    return new Vector(
+    return new SF.Vector(
         tm*tm*cxs[0] + 2*tm*t*cxs[1] + t*t*cxs[2],
         tm*tm*cys[0] + 2*tm*t*cys[1] + t*t*cys[2]);
 };
 
 UnconstrainedFitter.prototype.secondDerivativeAt = function (p) {
     var t = p / this.pmax, tm = 1 - t, cxs = this.cxs2, cys = this.cys2;
-    return new Vector(
+    return new SF.Vector(
         tm*cxs[0] + t*cxs[1],
         tm*cys[0] + t*cys[1]);
 };
@@ -214,7 +201,7 @@ UnconstrainedFitter.prototype.improveDataParameters = function () {
 UnconstrainedFitter.prototype.improveDataParameter = function (i) {
     var x = this.xs[i], y = this.ys[i], t = this.ps[i] / this.pmax,
         Q = this.vectorAt(t),
-        D = Q.minus(new Vector(x, y)),
+        D = Q.minus(new SF.Vector(x, y)),
         Qp = this.derivativeAt(t),
         Qpp = this.secondDerivativeAt(t),
         t1;
@@ -238,7 +225,7 @@ SF.set('canvasController', SC.Object.create({
 
     mouseVectorForEvent: function (event) {
         var c = this.canvas, cr = c.getBoundingClientRect();
-        return new Vector(
+        return new SF.Vector(
             event.clientX - cr.left - c.clientLeft + .5,
             event.clientY - cr.top - c.clientTop + .5);
     },
