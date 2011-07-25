@@ -1,8 +1,15 @@
 
 
-SF = SC.Application.create();
+SF = SC.Application.create({
+    canvasController: null,
 
-SF.set('canvasController', SC.Object.create({
+    ready: function () {
+        this._super();
+        this.canvasController = SF.CanvasController.create();
+    }
+});
+
+SF.CanvasController = SC.Object.extend({
 
     view: null,
     canvasBinding: 'view.element',
@@ -108,6 +115,6 @@ SF.set('canvasController', SC.Object.create({
         }
     }
 
-}));
+});
 
 
