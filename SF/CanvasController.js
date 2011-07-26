@@ -2,6 +2,7 @@
 
 SF.CanvasController = SC.Object.extend({
 
+    model: null, // SF.FittedPolySpline
     view: null,
     canvasBinding: 'view.element',
     gc: function () {
@@ -10,6 +11,9 @@ SF.CanvasController = SC.Object.extend({
     vectors: null,
     fitter: null,
     tracking: false,
+
+    init: function () {
+    },
 
     mouseVectorForEvent: function (event) {
         var c = this.canvas, cr = c.getBoundingClientRect();
@@ -20,6 +24,7 @@ SF.CanvasController = SC.Object.extend({
 
     on_mousedown: function (vector) {
         this.fitter = new SF.UnconstrainedFitter();
+        this.model = SF.FittedPolySpline.create();
         this.addPoint(vector);
     },
 
@@ -33,6 +38,9 @@ SF.CanvasController = SC.Object.extend({
     addPoint: function (point) {
         if (!this.pointIsWorthAdding(point))
             return;
+
+        this.model.addPatternPoint(point);
+
         this.fitter.push(point.x, point.y);
         this.gc.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.gc.lineWidth = 1;

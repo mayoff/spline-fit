@@ -4,6 +4,7 @@ SF.SplineCanvas = SC.View.extend({
     tagName: 'canvas',
     attributeBindings: [ 'width', 'height' ],
     controller: null,
+    modelBinding: '*controller.model',
     _tracking: false,
 
     init: function () {
@@ -20,6 +21,7 @@ SF.SplineCanvas = SC.View.extend({
     willInsertElement: function () {
         this._super();
         this.controller.set('view', this);
+        this.addObserver('*model.pattern.[]', this, this.patternDidChange);
         this.element.addEventListener('mousedown', this.on_mousedown);
     },
 
@@ -60,6 +62,10 @@ SF.SplineCanvas = SC.View.extend({
             this.controller.on_mouseup(this._vectorForEvent(event));
         }
         return false;
+    },
+
+    patternDidChange: function () {
+        console.log('patternDidChange', this, arguments);
     }
 
 });
