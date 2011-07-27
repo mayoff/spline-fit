@@ -13,8 +13,10 @@
     <![endif]-->
 </head>
 <body>
-    <script type='text/html'>
-        {{view SF.SplineCanvas id="canvas" width="500" height="500" controllerBinding="SF.canvasController"}}
+    <script type='text/html' data-view='SF.FitterPanel'>
+        <canvas class='fitter-canvas' width='500' height='500'></canvas>
+        <br>
+        {{patternLengthString}} in the pattern
     </script>
 
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js'></script>
@@ -25,8 +27,8 @@
     <script src='SF.js'></script>
     <script src='SF/Vector.js'></script>
     <script src='SF/FittedPolySpline.js'></script>
-    <script src='SF/CanvasController.js'></script>
-    <script src='SF/SplineCanvas.js'></script>
+    <script src='SF/FitterController.js'></script>
     <script src='SF/UnconstrainedFitter.js'></script>
+    <script src='SF/FitterPanel.js'></script>
 </body>
 </html>

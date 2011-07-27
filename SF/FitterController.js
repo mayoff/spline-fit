@@ -1,10 +1,10 @@
 
 
-SF.CanvasController = SC.Object.extend({
+SF.FitterController = SC.Object.extend({
 
+    view: null, // SF.FitterPanel
     model: null, // SF.FittedPolySpline
-    view: null,
-    canvasBinding: 'view.element',
+    canvasBinding: 'view.canvas', // HTMLCanvasElement
     gc: function () {
         return this.canvas ? this.canvas.getContext('2d') : null;
     }.property('canvas').cacheable(),
@@ -22,20 +22,14 @@ SF.CanvasController = SC.Object.extend({
             event.clientY - cr.top - c.clientTop + .5);
     },
 
-    on_mousedown: function (vector) {
+    beginPattern: function () {
         this.fitter = new SF.UnconstrainedFitter();
         this.model = SF.FittedPolySpline.create();
-        this.addPoint(vector);
     },
 
-    on_mousedrag: function (vector) {
-        this.addPoint(vector);
-    },
+    endPattern: function () { },
 
-    on_mouseup: function (event) {
-    },
-
-    addPoint: function (point) {
+    addPatternPoint: function (point) {
         if (!this.pointIsWorthAdding(point))
             return;
 
