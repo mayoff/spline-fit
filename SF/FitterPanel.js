@@ -33,7 +33,7 @@ SF.FitterPanel = SC.View.extend({
     },
 
     _vectorForEvent: function (event) {
-        var c = this.element, cr = c.getBoundingClientRect();
+        var c = this.canvas, cr = c.getBoundingClientRect();
         return new SF.Vector(
             event.clientX - cr.left - c.clientLeft + .5,
             event.clientY - cr.top - c.clientTop + .5);
