@@ -7,6 +7,7 @@
 
     <title>Spline Fitting</title>
     <link rel='stylesheet' href='style.css'>
+    <link rel='stylesheet' href='flexbox.css'>
 
     <!--[if lt IE 9]>
     <script src='http://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
@@ -14,9 +15,13 @@
 </head>
 <body>
     <script type='text/html' data-view='SF.FitterPanel'>
-        <canvas class='fitter-canvas' width='500' height='500'></canvas>
-        <br>
-        {{patternLengthString}} in the pattern
+        <hbox>
+            <vbox class='left'>
+                <canvas class='fitter-canvas' width='500' height='500'></canvas>
+                <span class='flex'>{{patternLengthString}} in the pattern</span>
+                {{view SC.Checkbox title="Draw the pattern" valueBinding="parentView.shouldDrawPattern"}}
+            </vbox>
+        </hbox>
     </script>
 
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js'></script>

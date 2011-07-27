@@ -86,14 +86,18 @@ a:hover { color: #036; }
     \\ ========================================== //
 */
 
-
+.fitter-panel {
+    padding: 1em;
+}
 
 .fitter-canvas {
-    margin: 1em;
+    display: block;
     border: 1px solid black;
 }
 
-
+LABEL > INPUT[type="checkbox"] {
+    margin-right: .5em;
+}
 
 
 

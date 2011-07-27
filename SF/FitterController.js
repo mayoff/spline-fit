@@ -12,16 +12,6 @@ SF.FitterController = SC.Object.extend({
     fitter: null,
     tracking: false,
 
-    init: function () {
-    },
-
-    mouseVectorForEvent: function (event) {
-        var c = this.canvas, cr = c.getBoundingClientRect();
-        return new SF.Vector(
-            event.clientX - cr.left - c.clientLeft + .5,
-            event.clientY - cr.top - c.clientTop + .5);
-    },
-
     beginPattern: function () {
         this.fitter = new SF.UnconstrainedFitter();
         this.model = SF.FittedPolySpline.create();

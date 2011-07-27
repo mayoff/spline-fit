@@ -1,0 +1,196 @@
+
+/**
+#Flexible Box CSS Helpers
+
+The `flexbox.css` stylesheet contains CSS styles for a number of custom elements.  These styles make it easy (or perhaps just easier) to use the [flexible box model](http://www.w3.org/TR/css3-flexbox/).
+*/
+
+/**
+##COVER element and class .cover
+
+The COVER tag or cover class makes an element fill its container completely.  Don't use this on an HBOX or VBOX - it won't work in Firefox 3.6.
+*/
+COVER, .cover {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/**
+##Class .fillcontainer
+
+The fillcontainer class makes an element have the same width and height as its container.  You can use this on an HBOX or VBOX.
+*/
+
+.fillcontainer {
+    width: 100%;
+    height: 100%;
+}
+
+/**
+##RECT element
+
+A RECT is an absolutely-positioned block.  You might use it as the parent of an HBOX or VBOX that you want absolutely positioned, since Firefox 3.6 doesn't allow boxes to have position:absolute.
+*/
+
+RECT {
+    display: block;
+    position: absolute;
+}
+
+/**
+##HBOX element
+
+HBOX uses the flexible box model to lay out its children along a horizontal axis.  By default, HBOX centers its children both vertically and horizontally.
+
+NOTE: Firefox 3.6 does not use the flexible box model if the element has absolute positioning.  Do not set `position:absolute` on an HBOX.
+
+You can control where the HBOX puts its children vertically by giving the HBOX one of these classes: top, vcenter, bottom, vstretch.
+
+- top makes an HBOX lay out its children along the HBOX's top edge.  Each child's top edge will be flush with the HBOX's top edge.
+- vcenter makes an HBOX center its children vertically.  This is the default.  Each child's vertical center will be at the HBOX's vertical center.
+- bottom makes an HBOX lay out its children along the HBOX's bottom edge.  Each child's bottom edge will be flush with the HBOX's bottom edge.
+- vstretch makes an HBOX stretch its children to the height of the HBOX.  Each child will be as tall as the HBOX, if the child's own style allows it.  If the child's style doesn't allow it, the child will be positioned at the top edge of the HBOX.
+
+You can control where the HBOX puts its children horizontally by giving the HBOX one of these classes: left, hcenter, right, justify.  The flex class or style on individual children also affects where the HBOX puts the children horizontally.
+
+- left makes an HBOX pack its children to the left.
+- hcenter makes an HBOX pack its children to the center horizontally.  This is the default.
+- right makes an HBOX pack its children to the right.
+- justify makes an HBOX distribute extra space equally between its children.  (The extra space is not part of any of the children.)
+
+The wrap class allows an HBOX to wrap its children onto multiple rows if the HBOX lacks rooms for all of its children in a single row.
+*/
+
+/**
+##VBOX element
+
+VBOX uses the flexible box model to lay out its children along a vertical axis.  By default, VBOX centers its children both horizontally and vertically.
+
+NOTE: Firefox 3.6 does not use the flexible box model if the element has absolute positioning.  Do not set `position:absolute` on an VBOX.
+
+You can control where a VBOX puts its children horizontally by giving the VBOX one of these classes: left, hcenter, right, hstretch.
+
+- left makes a VBOX lay out its children along the VBOX's left edge.  Each child's left edge will be flush with the VBOX's left edge.
+- hcenter makes a VBOX center its children horizontally.  This is the default.  Each child's horizontal center will be at the VBOX's horizontal center.
+- right makes a VBOX lay out its children along the VBOX's right edge.  Each child's right edge will be flush with the VBOX's right edge.
+- hstretch makes a VBOX stretch its children to the width of the VBOX.  Each child will be as wide as the VBOX, if the child's own style allows it.  If the child's style doesn't allow it, the child will be positioned at the left edge of the VBOX.
+
+You can control where the VBOX puts its children vertically by giving the VBOX one of these classes: top, vcenter, bottom, justify.  The flex class or style on individual children also affects where the VBOX puts the children vertically.
+
+- top makes a VBOX pack its children to the top.
+- vcenter makes a VBOX pack its children to the center vertically.  This is the default.
+- bottom makes a VBOX pack its children to the bottom.
+- justify makes a VBOX distribute extra space equally between its children.  (The extra space is not part of any of the children.)
+
+The wrap class allows a VBOX to wrap its children onto multiple columns if the VBOX lacks room for all of its children in a single column.
+*/
+
+HBOX, VBOX {
+    display: box;
+    box-align: center;
+    box-pack: center;
+
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-pack: center;
+}
+
+HBOX {
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
+}
+
+VBOX {
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+}
+
+HBOX.top, VBOX.left {
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    box-align: start;
+}
+
+HBOX.vcenter, VBOX.hcenter {
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    box-align: center;
+}
+
+HBOX.bottom, VBOX.right {
+    -webkit-box-align: end;
+    -moz-box-align: end;
+    box-align: end;
+}
+
+HBOX.vstretch, VBOX.hstretch {
+    -webkit-box-align: stretch;
+    -moz-box-align: stretch;
+    box-align: stretch;
+}
+
+HBOX.left, VBOX.top {
+    -webkit-box-pack: start;
+    -moz-box-pack: start;
+    boz-pack: start;
+}
+
+HBOX.hcenter, VBOX.vcenter {
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    boz-pack: center;
+}
+
+HBOX.right, VBOX.bottom {
+    -webkit-box-pack: end;
+    -moz-box-pack: end;
+    boz-pack: end;
+}
+
+HBOX.justify, VBOX.justify {
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    boz-pack: justify;
+}
+
+HBOX.wrap, VBOX.wrap {
+    -webkit-box-lines: multiple;
+    -moz-box-lines: multiple;
+    box-lines: multiple;
+}
+
+/**
+##Class .flex
+
+The flex class applied to a child of an HBOX or VBOX will make the child expand along the box's axis in the same proportion as SPRING elements and other children with the flex class.
+*/
+
+HBOX > .flex, VBOX > .flex {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    box-flex: 1;
+}
+
+/**
+##SPRING element
+
+A SPRING element as a child of an HBOX or VBOX will expand along the box's axis in the same proportion as other SPRING elements and children with the flex class.
+*/
+
+HBOX > SPRING, VBOX > SPRING {
+    display: block;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    box-flex: 1;
+}
+

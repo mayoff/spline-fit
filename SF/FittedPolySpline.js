@@ -10,7 +10,9 @@ SF.FittedPolySpline = SC.Object.extend({
     },
 
     addPatternPoint: function (point) {
+        SC.beginPropertyChanges();
         this.pattern.pushObject(point);
+        SC.endPropertyChanges();
     }
 
 });
