@@ -28,7 +28,6 @@ SF.FittedPolySpline = SC.Object.extend({
         this.controls.push(this.pattern[0]);
         switch (this.pattern.length) {
             case 1:
-                this._fit1();
                 break;
             case 2:
                 this._fit2();
@@ -47,13 +46,16 @@ SF.FittedPolySpline = SC.Object.extend({
         this.controls.push(c1, c2, c3);
     },
 
-    /** Fit the entire pattern, which contains only one point. */
-    _fit1: function () {
-        var p = this.pattern[0];
-        this._pushSpline(p, p, p);
+    /** Fit the entire pattern, which contains only two points. */
+    _fit2: function () {
+        var p0 = this.pattern[0], p3 = this.pattern[1];
+        var d = p3.minus(p0).times(1/3);
+        this._pushSpline(p0.plus(d), p3.minus(d), p3);
     },
 
-
+    /** Fit the entire pattern, which contains only three points.  I fit a quadratic Bezier spline, then convert it to a cubic. */
+    _fit3: function () {
+    }
 
 });
 
