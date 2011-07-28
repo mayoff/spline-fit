@@ -31,7 +31,7 @@ $$ q_1 = {p_1 - p_0 B_{0,2}(u) - p_2 B_{2,2}(u) \over B_{1,2}(u) }
 Note that we can choose $u$ arbitrarily.  Two obvious candidates are $1\over 2$ and $\lvert p_1 - p_0 \rvert \over \lvert p_1 - p_0 \rvert + \lvert p_2 - p_1 \rvert$.
 
 A cubic curve $C(t)$ is defined by four control points $c_i$.
-$$ C(t) = \sum_{i=0}^3 c_i B{i,3}(t) $$
+$$ C(t) = \sum_{i=0}^3 c_i B_{i,3}(t) $$
 To make $C(t) = Q(t)$, we choose $c_i$ as follows:
 $$
 \begin{aligned}
