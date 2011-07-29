@@ -7,6 +7,7 @@ function lineTo(gc, p) { gc.lineTo(p.x, p.y); }
 function bezierCurveTo(gc, c1, c2, c3) {
     gc.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, c3.x, c3.y);
 }
+function circle(gc, p, r) { gc.arc(p.x, p.y, r, 0, Math.TWO_PI); }
 
 SF.FitterPanel = SC.View.extend({
 
@@ -24,7 +25,7 @@ SF.FitterPanel = SC.View.extend({
     shouldDrawControlPolygon: true,
     shouldDrawPolySpline: true,
 
-    pointSize: 3,
+    pointSize: 6,
 
     patternPointMinDistance: null,
 
@@ -181,14 +182,23 @@ SF.FitterPanel = SC.View.extend({
     },
 
     _drawPoint: function (point) {
-        var s = this.pointSize, hs = s / 2;
-        this.gc.fillRect(point.x - hs, point.y - hs, s, s);
+        var gc = this.gc;
+        gc.beginPath();
+        circle(gc, point, this.pointSize / 2);
+        gc.fill();
     },
 
     _drawHollowPoint: function (point) {
-        var s = this.pointSize, hs = s / 2;
-        this.gc.fillRect(point.x - hs, point.y - hs, s, s);
-        this.gc.clearRect(point.x - hs + 1, point.y - hs + 1, s - 2, s - 2);
+        var gc = this.gc;
+        gc.beginPath();
+        circle(gc, point, this.pointSize / 2);
+        gc.fill();
+        gc.save();
+            gc.fillStyle = 'white';
+            gc.beginPath();
+            circle(gc, point, this.pointSize / 2 - 1);
+            gc.fill();
+        gc.restore();
     }
 
 });

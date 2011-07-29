@@ -23,3 +23,5 @@ Function.prototype.untrace = function (object, method) {
     return object[method];
 };
 
+Math.TWO_PI = Math.PI * 2;
+
