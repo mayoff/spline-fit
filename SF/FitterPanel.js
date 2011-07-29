@@ -23,6 +23,8 @@ SF.FitterPanel = SC.View.extend({
         };
     })().property().cacheable(),
 
+    patternPointMinDistance: null,
+
     _needsDisplay: false,
 
     _tracking: false, // true if I saw mouse button 1 pressed and installed mousemove/mouseup handlers
@@ -35,6 +37,8 @@ SF.FitterPanel = SC.View.extend({
                 return SC.run(self, fn, event);
             };
         });
+
+        this.patternPointMinDistance = 2;
 
         this._super();
         this.controller = SF.FitterController.create({ view: this });

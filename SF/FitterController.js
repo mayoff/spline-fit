@@ -45,7 +45,7 @@ SF.FitterController = SC.Object.extend({
             return true;
         }
         var dx = point.x - this.fitter.xs.last, dy = point.y - this.fitter.ys.last;
-        return dx*dx + dy*dy >= 4;
+        return Math.sqrt(dx*dx + dy*dy) >= this.view.patternPointMinDistance;
     },
 
     drawPoint: function (x, y) {

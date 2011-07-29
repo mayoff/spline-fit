@@ -99,6 +99,9 @@ LABEL > INPUT[type="checkbox"] {
     margin-right: .5em;
 }
 
+DIV.sf-slider {
+    display: inline;
+}
 
 
 
