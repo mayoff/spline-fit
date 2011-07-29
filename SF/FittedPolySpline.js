@@ -66,10 +66,10 @@ SF.FittedPolySpline = SC.Object.extend({
 
         var ps = this.pattern, p0 = ps[0], p1 = ps[1], p2 = ps[2];
         var u = .5;
-        // q1n = numerator of q1
-        var q1n = p1.minus(p0.times((1-u)*(1-u))).minus(p2.times(u*u));
-        var c1 = p0.plus(q1n).times(1/3);
-        var c2 = p2.plus(q1n).times(1/3);
+        // q1_23 = q1 * 2/3
+        var q1_23 = p1.minus(p0.times((1-u)*(1-u))).minus(p2.times(u*u)).times(1/(3*u*(1-u)));
+        var c1 = p0.times(1/3).plus(q1_23);
+        var c2 = p2.times(1/3).plus(q1_23);
 
         this._pushSpline(c1, c2, p2);
     },

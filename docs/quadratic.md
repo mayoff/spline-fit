@@ -26,7 +26,7 @@ $$ p_1 = Q(u) = p_0 B_{0,2}(u) + q_1 B_{1,2}(u) + p_2 B{2,2}(u) $$
 We solve for $q_1$.
 
 $$ q_1 = {p_1 - p_0 B_{0,2}(u) - p_2 B_{2,2}(u) \over B_{1,2}(u) }
-    = {p_1 - p_0(1-u)^2 - p_2 u^2 \over 2}$$
+    = {p_1 - p_0(1-u)^2 - p_2 u^2 \over 2u(1-u)}$$
 
 Note that we can choose $u$ arbitrarily.  Two obvious candidates are $1\over 2$ and $\lvert p_1 - p_0 \rvert \over \lvert p_1 - p_0 \rvert + \lvert p_2 - p_1 \rvert$.
 
@@ -36,8 +36,8 @@ To make $C(t) = Q(t)$, we choose $c_i$ as follows:
 $$
 \begin{aligned}
 c_0 &= q_0 &=& p_0 \\
-c_1 &= q_0/3 + 2q_1/3 &=& (p_0 + p_1 - p_0(1-u)^2 - p_2 u^2)/3 \\
-c_2 &= q_2/3 + 2q_1/3 &=& (p_2 + p_1 - p_0(1-u)^2 - p_2 u^2)/3 \\
+c_1 &= q_0/3 + 2q_1/3 &=& p_0/3 + (p_1 - p_0(1-u)^2 - p_2 u^2)/(3u(1-u)) \\
+c_2 &= q_2/3 + 2q_1/3 &=& p_2/3 + (p_1 - p_0(1-u)^2 - p_2 u^2)/(3u(1-u)) \\
 c_3 &= q_2 &=& p_2
 \end{aligned}
 $$
