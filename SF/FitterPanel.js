@@ -1,5 +1,13 @@
 
 
+(function () {
+
+function moveTo(gc, p) { gc.moveTo(p.x, p.y); }
+function lineTo(gc, p) { gc.lineTo(p.x, p.y); }
+function bezierCurveTo(gc, c1, c2, c3) {
+    gc.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, c3.x, c3.y);
+}
+
 SF.FitterPanel = SC.View.extend({
 
     tagName: 'COVER',
@@ -12,16 +20,11 @@ SF.FitterPanel = SC.View.extend({
         return this.canvas ? this.canvas.getContext('2d') : null;
     }.property('canvas').cacheable(),
 
-    shouldDrawPattern: (function () {
-        var value = true;
-        return function (key, newValue) {
-            if (newValue !== undefined && newValue !== value) {
-                value = newValue;
-                this.setNeedsDisplay();
-            }
-            return value;
-        };
-    })().property().cacheable(),
+    shouldDrawPattern: true,
+    shouldDrawControlPolygon: true,
+    shouldDrawPolySpline: true,
+
+    pointSize: 3,
 
     patternPointMinDistance: null,
 
@@ -36,6 +39,11 @@ SF.FitterPanel = SC.View.extend({
             self[key] = function (event) {
                 return SC.run(self, fn, event);
             };
+        });
+
+        'shouldDrawPattern shouldDrawControlPolygon shouldDrawPolySpline'.w().forEach(function (key)
+        {
+            SC.addObserver(self, key, self, self.setNeedsDisplay);
         });
 
         this.patternPointMinDistance = 2;
@@ -102,40 +110,88 @@ SF.FitterPanel = SC.View.extend({
     _redisplay: function () {
         if (!this._needsDisplay)
             return;
-
-        var gc = this.gc;
-        gc.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        if (this.model) {
-            if (this.shouldDrawPattern)
-                this._drawPattern(gc);
-        }
-
         this._needsDisplay = false;
+
+        this.gc.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if (!this.model || this.model.pattern.length < 1)
+            return;
+
+        if (this.shouldDrawPattern)
+            this._drawPattern();
+        if (this.shouldDrawControlPolygon)
+            this._drawControlPolygons();
+        if (this.shouldDrawPolySpline)
+            this._drawPolySpline();
     },
 
-    _drawPattern: function (gc) {
+    _drawPattern: function () {
+        var gc = this.gc;
         gc.lineWidth = 1;
         gc.strokeStyle = '#ccc';
-        this._drawPolyLine(gc, this.model.pattern);
+        this._drawPolyLine(this.model.pattern);
         gc.fillStyle = 'black';
-        this._drawPoints(gc, 3, this.model.pattern);
+        this._drawPoints(this.model.pattern);
     },
 
-    _drawPolyLine: function (gc, points) {
-        var i, l = points.length;
+    _drawControlPolygons: function () {
+        var cs = this.model.controls, i, l = cs.length, gc = this.gc;
+        gc.lineWidth = 1;
+        gc.strokeStyle = 'gray';
         gc.beginPath();
-        gc.moveTo(points[0].x, points[0].y);
-        for (i = 1; i < l; ++i)
-            gc.lineTo(points[i].x, points[i].y);
+        this.model.forEachCubic(function (c0, c1, c2, c3) {
+            moveTo(gc, c0);
+            lineTo(gc, c1);
+            moveTo(gc, c2);
+            lineTo(gc, c3);
+        }, this);
+        gc.stroke();
+        gc.fillStyle = 'gray';
+        this._drawPoint(cs[0]);
+        this.model.forEachCubic(function (c0, c1, c2, c3) {
+            this._drawHollowPoint(c1);
+            this._drawHollowPoint(c2);
+            this._drawPoint(c3);
+        }, this);
+    },
+
+    _drawPolySpline: function () {
+        var cs = this.model.controls, i, l = cs.length, gc = this.gc;
+        gc.lineWidth = 1;
+        gc.strokeStyle = 'blue';
+        gc.beginPath();
+        moveTo(gc, this.model.controls[0]);
+        this.model.forEachCubic(function (c0, c1, c2, c3) {
+            bezierCurveTo(gc, c1, c2, c3);
+        }, this);
         gc.stroke();
     },
 
-    _drawPoints: function (gc, size, points) {
-        var i, l = points.length, halfSize = size / 2;
-        for (i = 0; i < l; ++i)
-            gc.fillRect(points[i].x - halfSize, points[i].y - halfSize, size, size);
+    _drawPolyLine: function (points) {
+        var i, l = points.length, gc = this.gc;
+        gc.beginPath();
+        moveTo(gc, points[0]);
+        for (i = 1; i < l; ++i)
+            lineTo(gc, points[i]);
+        gc.stroke();
+    },
+
+    _drawPoints: function (points) {
+        this.model.pattern.forEach(function (point) { this._drawPoint(point); }, this);
+    },
+
+    _drawPoint: function (point) {
+        var s = this.pointSize, hs = s / 2;
+        this.gc.fillRect(point.x - hs, point.y - hs, s, s);
+    },
+
+    _drawHollowPoint: function (point) {
+        var s = this.pointSize, hs = s / 2;
+        this.gc.fillRect(point.x - hs, point.y - hs, s, s);
+        this.gc.clearRect(point.x - hs + 1, point.y - hs + 1, s - 2, s - 2);
     }
 
 });
+
+})();
 
