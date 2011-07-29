@@ -121,7 +121,7 @@ SF.FitterPanel = SC.View.extend({
         if (this.shouldDrawPattern)
             this._drawPattern();
         if (this.shouldDrawControlPolygon)
-            this._drawControlPolygons();
+            this._drawControlPolygon();
         if (this.shouldDrawPolySpline)
             this._drawPolySpline();
     },
@@ -135,15 +135,15 @@ SF.FitterPanel = SC.View.extend({
         this._drawPoints(this.model.pattern);
     },
 
-    _drawControlPolygons: function () {
+    _drawControlPolygon: function () {
         var cs = this.model.controls, i, l = cs.length, gc = this.gc;
         gc.lineWidth = 1;
         gc.strokeStyle = 'gray';
         gc.beginPath();
+        moveTo(gc, this.model.controls[0]);
         this.model.forEachCubic(function (c0, c1, c2, c3) {
-            moveTo(gc, c0);
             lineTo(gc, c1);
-            moveTo(gc, c2);
+            lineTo(gc, c2);
             lineTo(gc, c3);
         }, this);
         gc.stroke();

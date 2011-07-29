@@ -19,7 +19,14 @@
             <vbox class='left'>
                 <canvas class='fitter-canvas' width='500' height='500'></canvas>
                 <div class='flex'>{{patternLengthString}} in the pattern</div>
-                {{view SC.Checkbox title="Draw the pattern" valueBinding="parentView.shouldDrawPattern"}}
+                <hbox class='justify' style='width: 100%'>
+                    {{view SC.Checkbox title="Draw the pattern" valueBinding="parentView.shouldDrawPattern"}}
+                    <spring></spring>
+                    {{view SC.Checkbox title="Draw the control polygon" valueBinding="parentView.shouldDrawControlPolygon"}}
+                    <spring></spring>
+                    {{view SC.Checkbox title="Draw the fitted polyspline"
+                        valueBinding="parentView.shouldDrawPolySpline"}}
+                </hbox>
                 <div>{{view SF.Slider min=1 max=50 valueBinding="parentView.patternPointMinDistance"}} Consecutive pattern points must be at least {{patternPointMinDistance}} apart</div>
             </vbox>
         </hbox>
