@@ -2,15 +2,19 @@
 
 SF.FittedPolySpline = SC.Object.extend({
 
-    /** pattern is the array of points through which the fitted polyspline should pass.  You provide this by sending me the addPatternPoint message repeatedly. */
+    /** pattern is the array of points through which the fitted polyspline should pass. You provide this by sending me the addPatternPoint message repeatedly. */
     pattern: null, // Array of SF.Vector
 
-    /** controls is the array of controls points for the fitted cubic Bezier splines.  The number of splines is <code>(controls.length - 1) / 3</code>.  Spline i is defined by the four points in controls[3*i] through controls[3*i+3] inclusive. If the pattern is empty, controls is empty.  If the pattern contains just one point, controls contains just that point.  If pattern contains two or more points, controls contains 3N+1 points for some integer N>0. */
+    /** controls is the array of controls points for the fitted cubic Bezier splines. The number of splines is <code>(controls.length - 1) / 3</code>. Spline i is defined by the four points in controls[3*i] through controls[3*i+3] inclusive. If the pattern is empty, controls is empty. If the pattern contains just one point, controls contains just that point. If pattern contains two or more points, controls contains 3N+1 points for some integer N>0. */
     controls: null, // Array of SF.Vector
+
+    /** parameters is the array of parameters at which I tried to make the fitted polyspline pass through the pattern points. That is to say, `this.fittedValue(this.parameters[i])` should be close to `this.pattern[j]`. */
+    parameters: null, // Array of Number
 
     init: function () {
         this.pattern = [];
         this.controls = [];
+        this.parameters = [];
     },
 
     addPatternPoint: function (point) {
@@ -48,7 +52,7 @@ SF.FittedPolySpline = SC.Object.extend({
         }
     },
 
-    /** Append a spline to this.controls.  The spline starts at this.controls.last() so you should only pass three control points. */
+    /** Append a spline to this.controls. The spline starts at this.controls.last() so you should only pass three control points. */
     _pushSpline: function (c1, c2, c3) {
         this.controls.push(c1, c2, c3);
     },
@@ -60,9 +64,9 @@ SF.FittedPolySpline = SC.Object.extend({
         this._pushSpline(p0.plus(d), p3.minus(d), p3);
     },
 
-    /** Fit the entire pattern, which contains only three points.  I fit a quadratic Bezier spline, then convert it to a cubic. */
+    /** Fit the entire pattern, which contains only three points. I fit a quadratic Bezier spline, then convert it to a cubic. */
     _fit3: function () {
-        // The math for this method is described in docs/quadratic.md .
+        // See docs/quadratic.md for the derivation.
 
         var ps = this.pattern, p0 = ps[0], p1 = ps[1], p2 = ps[2];
         var u = .5;
@@ -76,7 +80,9 @@ SF.FittedPolySpline = SC.Object.extend({
 
     /** Fit the entire pattern, which contains at least four points. */
     _fitMany: function () {
-        // XXX TODO
+        this.parameters = SF.choosePatternParameters(this.pattern);
+        var cs = SF.fitUnconstrainedCubic(this.pattern, this.parameters);
+        this._pushSpline(cs[0], cs[1], this.pattern.last);
     }
 
 });
