@@ -1,8 +1,8 @@
 
 
-all: quadratic.html
+all: quadratic.html cubic-unconstrained.html
 
-%.html: %.md
-	echo '<!doctype html>' > $@.new
+%.html: %.md prefix.html
+	cat prefix.html > $@.new
 	Markdown.pl $< >> $@.new
 	mv $@.new $@

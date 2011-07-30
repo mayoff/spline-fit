@@ -1,11 +1,4 @@
 <!-- To format this file, you need to use a hacked version of Markdown that ignores MathJax sections containing in $...$ and $$...$$ delimiters. -->
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
-<script type="text/javascript">
-    MathJax.Hub.Config({
-        "HTML-CSS": { availableFonts:[] },
-        "tex2jax": { inlineMath: [ [ '$', '$' ] ] }
-    });
-</script>
 
 We're going to fit a cubic B&eacute;zier curve through three points $p_i$ which comprise the *pattern*.  First we'll fit a quadratic curve through the points, then we'll elevate the degree of the curve to make it cubic.
 

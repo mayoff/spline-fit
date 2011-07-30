@@ -1,0 +1,25 @@
+<!doctype html>
+<style>
+P { line-height: 150%; }
+</style>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+<script type="text/javascript">
+    MathJax.Hub.Config({
+        "HTML-CSS": { availableFonts:[] },
+        "tex2jax": { inlineMath: [ [ '$', '$' ] ] }
+    });
+    MathJax.Hub.Register.StartupHook("TeX Jax Ready",function () {
+        var TEX = MathJax.InputJax.TeX;
+        var MML = MathJax.ElementJax.mml;
+        TEX.Definitions.macros.cancel  =
+            ["myCancel",MML.NOTATION.UPDIAGONALSTRIKE];
+        TEX.Definitions.macros.bcancel =
+            ["myCancel",MML.NOTATION.DOWNDIAGONALSTRIKE];
+        TEX.Parse.Augment({
+            myCancel: function (name,notation) {
+                var mml = this.ParseArg(name);
+                this.Push(MML.menclose(mml).With({notation:notation}));
+            }
+        });
+    });
+</script>
