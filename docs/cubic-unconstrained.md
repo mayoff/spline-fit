@@ -38,7 +38,7 @@ $$
     &= -\sum_j p_j A_{1,3} + \sum_j (c_0 A_{0,3} A_{1,3} + c_1 {A_{1,3}}^2 + c_2 A_{2,3} A_{1,3} + c_3 A_{3,3} A_{1,3}) \\
     &= -\sum_j p_j A_{1,3} + \sum_j c_0 A_{0,3} A_{1,3} + c_1 \sum_j {A_{1,3}}^2 + c_2 \sum_j A_{2,3} A_{1,3} + \sum_j c_3 A_{3,3} A_{1,3} \\
 c_1 \sum_j {A_{1,3}}^2 + c_2 \sum_j A_{2,3} A_{1,3}
-    &= \sum_j (c_0 A_{0,3} A_{1,3} + c_3 A_{3,3} A_{1,3} - p_j A_{1,3})
+    &= \sum_j (p_j A_{1,3} - c_0 A_{0,3} A_{1,3} - c_3 A_{3,3} A_{1,3})
     \tag{1}
 \end{align}
 $$
@@ -46,7 +46,7 @@ $$
 To find the $c_2$ that minimizes $E$, we set $\partial E/\partial c_2 = 0$ and obtain a similar equation.
 $$ 
 c_1 \sum_j A_{1,3} A_{2,3} + c_2 \sum_j {A_{2,3}}^2
-    = \sum_j (c_0 A_{0,3} A_{2,3} + c_3 A_{3,3} A_{2,3} - p_j A_{2,3})
+    = \sum_j (p_j A_{2,3} - c_0 A_{0,3} A_{2,3} - c_3 A_{3,3} A_{2,3})
     \tag{2}
 $$
 
@@ -56,8 +56,8 @@ $$
 m_1 &= \sum_j {A_{1,3}}^2 \\
 m_{12} &= \sum_j A_{1,3} A_{2,3} \\
 m_2 &= \sum_j {A_{2,3}}^2 \\
-b_1 &= \sum_j (c_0 A_{0,3} A_{1,3} + c_3 A_{3,3} A_{1,3} - p_j A_{1,3}) \\
-b_2 &= \sum_j (c_0 A_{0,3} A_{2,3} + c_3 A_{3,3} A_{2,3} - p_j A_{2,3})
+b_1 &= \sum_j (p_j A_{1,3} - c_0 A_{0,3} A_{1,3} - c_3 A_{3,3} A_{1,3}) \\
+b_2 &= \sum_j (p_j A_{2,3} - c_0 A_{0,3} A_{2,3} + c_3 A_{3,3} A_{2,3})
 \end{align}
 $$
 Then the solutions of the system are
