@@ -21,3 +21,7 @@ SF.Vector.prototype.dot = function (rhs) {
     return this.x * rhs.x + this.y * rhs.y;
 };
 
+SF.Vector.prototype.norm = function () {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+};
+
