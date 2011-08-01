@@ -11,17 +11,23 @@ SF.FitterController = SC.Object.extend({
     vectors: null,
     tracking: false,
 
+    _allPoints: null,
+
     init: function () {
         this.model = SF.FittedPolySpline.create();
+        SC.addObserver(this, '*view.patternPointMinDistance', this, this.patternPointMinDistanceDidChange);
     },
 
     beginPattern: function () {
         this.model.reset();
+        this._allPoints = [];
     },
 
     endPattern: function () { },
 
     addPatternPoint: function (point) {
+        this._allPoints.push(point);
+
         if (!this.pointIsWorthAdding(point))
             return;
 
@@ -34,6 +40,17 @@ SF.FitterController = SC.Object.extend({
             return true;
         }
         return point.minus(pattern.last).norm() >= this.view.patternPointMinDistance;
+    },
+
+    patternPointMinDistanceDidChange: function () {
+        SC.beginPropertyChanges();
+        this.model.reset();
+        this._allPoints.forEach(function (point) {
+            if (!this.pointIsWorthAdding(point))
+                return;
+            this.model.addPatternPoint(point);
+        }, this);
+        SC.endPropertyChanges();
     }
 
 });
