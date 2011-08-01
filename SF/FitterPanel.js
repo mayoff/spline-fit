@@ -47,6 +47,8 @@ SF.FitterPanel = SC.View.extend({
             SC.addObserver(self, key, self, self.setNeedsDisplay);
         });
 
+        SC.addObserver(this.model, 'maxDepth', self, self.setNeedsDisplay);
+
         this.patternPointMinDistance = 2;
 
         this._super();

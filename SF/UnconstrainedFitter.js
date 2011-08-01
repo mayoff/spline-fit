@@ -10,24 +10,24 @@ SF.choosePatternParameters = function (ps) {
     return us;
 };
 
-/** Fit a cubic Bezier curve with free control points through the pattern points *ps*, minimizing the squared error. The curve will try to pass through `ps[i]` at parameter value `us[i]/us[ps.length-1]`. I return an array of the two middle control points. The first and last control points are always `ps[0]` and `ps[ps.length-1]`. */
+/** Fit a cubic Bezier curve with free control points through the pattern points `ps[start]` through `ps[start+length-1]`, minimizing the squared error. The curve will try to pass through `ps[i]` at parameter value `(us[i]-us[start])/(us[start+length-1]-us[start])`. I return an array of the two middle control points. The first and last control points are always `ps[start]` and `ps[start+length-1]`. */
 
-SF.fitUnconstrainedCubic = function (ps, us) {
+SF.fitUnconstrainedCubic = function (ps, us, start, length) {
     // See docs/cubic-unconstrained.md for the derivation.
 
-    var l = ps.length, umax = us[l - 1],
+    var umin = us[start], uscale = us[start+length-1] - umin,
         m1 = 0, m12 = 0, m2 = 0,
         j, u,
         A0, A1, A2, A3,
         b1x = 0, b1y = 0, b2x = 0, b2y = 0,
-        c0x = ps[0].x, c0y = ps[0].y,
-        c3x = ps[l-1].x, c3y = ps[l-1].y,
+        c0x = ps[start].x, c0y = ps[start].y,
+        c3x = ps[start+length-1].x, c3y = ps[start+length-1].y,
         pjx, pjy, d;
 
-    for (j = 0; j < l; ++j) {
-        u = us[j] / umax;
-        pjx = ps[j].x;
-        pjy = ps[j].y;
+    for (j = 0; j < length; ++j) {
+        u = (us[start+j] - umin) / uscale;
+        pjx = ps[start+j].x;
+        pjy = ps[start+j].y;
         A0 = (1 - u) * (1 - u) * (1 - u);
         A1 = 3 * (1 - u) * (1 - u) * u;
         A2 = 3 * (1 - u) * u * u;

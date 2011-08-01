@@ -28,6 +28,7 @@
                         valueBinding="parentView.shouldDrawPolySpline"}}
                 </hbox>
                 <div>{{view SF.Slider min=1 max=50 valueBinding="parentView.patternPointMinDistance"}} Consecutive pattern points must be at least {{patternPointMinDistance}} apart</div>
+                <div>{{view SF.Slider min=1 max=10 valueBinding="parentView.model.maxDepth"}} Maximum recursion depth is {{model.maxDepth}}</div>
             </vbox>
         </hbox>
     </script>
