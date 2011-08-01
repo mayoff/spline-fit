@@ -27,8 +27,8 @@
                     {{view SC.Checkbox title="Draw the fitted polyspline"
                         valueBinding="parentView.shouldDrawPolySpline"}}
                 </hbox>
-                <div>{{view SF.Slider min=1 max=50 valueBinding="parentView.patternPointMinDistance"}} Consecutive pattern points must be at least {{patternPointMinDistance}} apart</div>
-                <div>{{view SF.Slider min=1 max=10 valueBinding="parentView.model.maxDepth"}} Maximum recursion depth is {{model.maxDepth}}</div>
+                <div>{{view SF.Slider min=1 max=50 valueBinding="parentView.patternPointMinDistance"}} {{patternPointMinDistance}} is the minimum distance between consecutive pattern points</div>
+                <div>{{view SF.Slider min=1 max=10 valueBinding="parentView.model.maxDepth"}} {{model.maxDepth}} is the maximum recursion depth</div>
             </vbox>
         </hbox>
     </script>

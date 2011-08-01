@@ -43,6 +43,8 @@ SF.FitterController = SC.Object.extend({
     },
 
     patternPointMinDistanceDidChange: function () {
+        if (!this._allPoints || !this._allPoints.length)
+            return;
         SC.beginPropertyChanges();
         this.model.reset();
         this._allPoints.forEach(function (point) {
