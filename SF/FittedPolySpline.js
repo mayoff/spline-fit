@@ -96,9 +96,9 @@ SF.FittedPolySpline = SC.Object.extend({
             var fcs = SF.fitUnconstrainedCubic(this.pattern, this.parameters, start, length);
             cs.push(fcs[0], fcs[1], this.pattern[start+length-1]);
         } else {
-            var m = Math.floor(length / 2);
-            this._fit(start, m, cs, depth + 1);
-            this._fit(start + m, length - m, cs, depth + 1);
+            var s2 = start + Math.floor(length / 2);
+            this._fit(start, s2 - start + 1, cs, depth + 1);
+            this._fit(s2, (start + length - s2), cs, depth + 1);
         }
     }
 
