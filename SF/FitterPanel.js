@@ -42,18 +42,15 @@ SF.FitterPanel = SC.View.extend({
             };
         });
 
-        'shouldDrawPattern shouldDrawControlPolygon shouldDrawPolySpline'.w().forEach(function (key)
+        'shouldDrawPattern shouldDrawControlPolygon shouldDrawPolySpline *model.pattern.[] *model.controls.[] *model.parameters.[]'.w().forEach(function (key)
         {
             SC.addObserver(self, key, self, self.setNeedsDisplay);
         });
-
-        SC.addObserver(this.model, 'maxDepth', self, self.setNeedsDisplay);
 
         this.patternPointMinDistance = 2;
 
         this._super();
         this.controller = SF.FitterController.create({ view: this });
-        SC.addObserver(this, '*model.pattern.[]', this, this.setNeedsDisplay);
     },
 
     patternLengthBinding: '*model.pattern.length',

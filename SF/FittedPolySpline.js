@@ -23,12 +23,19 @@ SF.FittedPolySpline = SC.Object.extend({
     init: function () {
         this._super();
         this.reset();
+        '*pattern.[] maxDepth'.w().forEach(function (key) {
+            SC.addObserver(this, key, this, this.fit);
+        }, this);
     },
 
     addPatternPoint: function (point) {
         var cs;
-        SC.beginPropertyChanges();
         this.pattern.pushObject(point);
+    },
+
+    /** Fit splines to my pattern.  I automatically call this whenever you call `addPatternPoint`.  You need to call it if you change any of my other parameters. */
+    fit: function () {
+        SC.beginPropertyChanges();
         this.parameters = SF.choosePatternParameters(this.pattern);
         cs = [ this.pattern[0] ];
         this._fit(0, this.pattern.length, cs, 0);
@@ -44,7 +51,6 @@ SF.FittedPolySpline = SC.Object.extend({
 
     /** Fit the points `pattern[start]` through `pattern[start+length-1]` using as many splines as necessary.  I assume that `cs.last === pattern[start]` when you call me; this will always be the first control point of the fitted splines.  I push the remaining control points of the splines onto `cs`. */
     _fit: function (start, length, cs, depth) {
-        console.log('..........'.substr(0, depth) + '_fit', start, length, depth);
         switch (length) {
             case 0:
                 break;
@@ -86,7 +92,6 @@ SF.FittedPolySpline = SC.Object.extend({
     /** Fit the points `pattern[start]` through `pattern[start+length-1]`, where `length >= 4`.  I assume `cs.last === pattern[start]` and push the remaining control points onto `cs`. */
 
     _fitMany: function (start, length, cs, depth) {
-        console.log('..........'.substr(0, depth) + '_fitMany', start, length, depth);
         if (length === 4 || depth >= this.maxDepth) {
             var fcs = SF.fitUnconstrainedCubic(this.pattern, this.parameters, start, length);
             cs.push(fcs[0], fcs[1], this.pattern[start+length-1]);
