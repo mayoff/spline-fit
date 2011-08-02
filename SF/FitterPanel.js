@@ -59,6 +59,12 @@ SF.FitterPanel = SC.View.extend({
         return (this.patternLength === 1) ? '1 point' : (+this.patternLength + ' points');
     }.property('patternLength'),
 
+    splineCountBinding: '*model.splines.length',
+
+    splineCountString: function () {
+        return (this.splineCount === 1) ? '1 spline' : (+this.splineCount + ' splines');
+    }.property('splineCount'),
+
     willInsertElement: function () {
         this.canvas = this.$('.fitter-canvas')[0];
         this.canvas.addEventListener('mousedown', this.mousedownHandler);
@@ -135,34 +141,34 @@ SF.FitterPanel = SC.View.extend({
     },
 
     _drawControlPolygon: function () {
-        var cs = this.model.controls, i, l = cs.length, gc = this.gc;
+        var model = this.model, gc = this.gc;
         gc.lineWidth = 1;
         gc.strokeStyle = 'gray';
         gc.beginPath();
-        moveTo(gc, this.model.controls[0]);
-        this.model.forEachCubic(function (c0, c1, c2, c3) {
-            lineTo(gc, c1);
-            lineTo(gc, c2);
-            lineTo(gc, c3);
+        moveTo(gc, model.pattern[0]);
+        model.forEachSpline(function (spline) {
+            lineTo(gc, spline.c1);
+            lineTo(gc, spline.c2);
+            lineTo(gc, spline.c3);
         }, this);
         gc.stroke();
         gc.fillStyle = 'gray';
-        this._drawPoint(cs[0]);
-        this.model.forEachCubic(function (c0, c1, c2, c3) {
-            this._drawHollowPoint(c1);
-            this._drawHollowPoint(c2);
-            this._drawPoint(c3);
+        this._drawPoint(model.pattern[0]);
+        model.forEachSpline(function (spline) {
+            this._drawHollowPoint(spline.c1);
+            this._drawHollowPoint(spline.c2);
+            this._drawPoint(spline.c3);
         }, this);
     },
 
     _drawPolySpline: function () {
-        var cs = this.model.controls, i, l = cs.length, gc = this.gc;
+        var gc = this.gc;
         gc.lineWidth = 1;
         gc.strokeStyle = 'blue';
         gc.beginPath();
-        moveTo(gc, this.model.controls[0]);
-        this.model.forEachCubic(function (c0, c1, c2, c3) {
-            bezierCurveTo(gc, c1, c2, c3);
+        moveTo(gc, this.model.pattern[0]);
+        this.model.forEachSpline(function (spline) {
+            bezierCurveTo(gc, spline.c1, spline.c2, spline.c3);
         }, this);
         gc.stroke();
     },
