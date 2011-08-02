@@ -1,53 +1,6 @@
 
 
-/** Choose initial parameters for the pattern points *ps*. I return an array `us` of unscaled parameter values. For each `ps[i]`, the fitters will try to make the curve pass through `ps[i]` at parameter value `us[i]/us[ps.length-1]`. */
-
-SF.choosePatternParameters = function (ps) {
-    var l = ps.length, j, us = new Array(l);
-    us[0] = 0;
-    for (j = 1; j < l; ++j)
-        us[j] = us[j-1] + ps[j].minus(ps[j-1]).norm();
-    return us;
-};
-
-/** Fit a cubic Bezier curve with free control points through the pattern points `ps[start]` through `ps[start+length-1]`, minimizing the squared error. The curve will try to pass through `ps[i]` at parameter value `(us[i]-us[start])/(us[start+length-1]-us[start])`. I return an array of the two middle control points. The first and last control points are always `ps[start]` and `ps[start+length-1]`. */
-
-SF.fitUnconstrainedCubic = function (ps, us, start, length) {
-    // See docs/cubic-unconstrained.md for the derivation.
-
-    var umin = us[start], uscale = us[start+length-1] - umin,
-        m1 = 0, m12 = 0, m2 = 0,
-        j, u,
-        A0, A1, A2, A3,
-        b1x = 0, b1y = 0, b2x = 0, b2y = 0,
-        c0x = ps[start].x, c0y = ps[start].y,
-        c3x = ps[start+length-1].x, c3y = ps[start+length-1].y,
-        pjx, pjy, d;
-
-    for (j = 0; j < length; ++j) {
-        u = (us[start+j] - umin) / uscale;
-        pjx = ps[start+j].x;
-        pjy = ps[start+j].y;
-        A0 = (1 - u) * (1 - u) * (1 - u);
-        A1 = 3 * (1 - u) * (1 - u) * u;
-        A2 = 3 * (1 - u) * u * u;
-        A3 = u * u * u;
-        m1 += A1 * A1;
-        m12 += A1 * A2;
-        m2 += A2 * A2;
-        b1x += A1 * (pjx - c0x * A0 - c3x * A3);
-        b1y += A1 * (pjy - c0y * A0 - c3y * A3);
-        b2x += A2 * (pjx - c0x * A0 - c3x * A3);
-        b2y += A2 * (pjy - c0y * A0 - c3y * A3);
-    }
-
-    d = m1 * m2 - m12 * m12;
-
-    return [
-        new SF.Vector((b1x*m2 - b2x*m12) / d, (b1y*m2 - b2y*m12) / d),
-        new SF.Vector((b2x*m1 - b1x*m12) / d, (b2y*m1 - b1y*m12) / d)
-    ];
-};
+// Only keep this around until Newton-Raphson refinement of parameters is moved elsewhere.
 
 SF.UnconstrainedFitter = function () {
     // I will try to pass the curve through each (xs[i], ys[i]) in order.

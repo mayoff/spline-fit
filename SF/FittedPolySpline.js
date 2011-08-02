@@ -35,13 +35,21 @@ SF.FittedPolySpline = SC.Object.extend({
     /** Fit splines to my pattern.  I automatically call this whenever you call `addPatternPoint`.  You need to call it if you change any of my other parameters. */
     fit: function () {
         SC.beginPropertyChanges();
-        this.parameters = SF.choosePatternParameters(this.pattern);
+        this.parameters = this._choosePatternParameters();
         this.splines = this._fit(0, this.pattern.length, 0);
         SC.endPropertyChanges();
     },
 
     forEachSpline: function (callback, thisObject) {
         this.splines.forEach(callback, thisObject);
+    },
+
+    _choosePatternParameters: function () {
+        var ps = this.pattern, l = ps.length, j, us = new Array(l);
+        us[0] = 0;
+        for (j = 1; j < l; ++j)
+            us[j] = us[j-1] + ps[j].minus(ps[j-1]).norm();
+        return us;
     },
 
     /** Fit the points `pattern[start]` through `pattern[start+length-1]` using as many splines as necessary. I return an array of SF.CubicBezierSpline. */
