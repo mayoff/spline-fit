@@ -83,7 +83,7 @@ SF.FittedPolySpline = SC.Object.extend({
             error = d.dot(d);
             if (error > maxError) {
                 maxError = error;
-                maxErrorIndex = i;
+                maxErrorIndex = start + i;
             }
         }
 
