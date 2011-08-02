@@ -14,6 +14,9 @@ SF.FittedPolySpline = SC.Object.extend({
     /** maxDepth is the maximum recursion depth I will use to subdivide splines for a better fit. */
     maxDepth: 2,
 
+    /** maxDistance is the maximum distance between a pattern point and the fitted curve before subdividing the fitted curve. */
+    maxDistance: 2,
+
     reset: function () {
         this.pattern = [];
         this.splines = [];
@@ -44,6 +47,17 @@ SF.FittedPolySpline = SC.Object.extend({
         this.splines.forEach(callback, thisObject);
     },
 
+    /** Return the point for parameter value `u`. */
+    vectorAt: function (u) {
+        var ss = this.splines, i, l = ss.length;
+        for (i = 1; i < l; ++i) {
+            if (u < ss[i].umin)
+                break;
+        }
+        --i;
+        return ss[i].vectorAt(u);
+    },
+
     _choosePatternParameters: function () {
         var ps = this.pattern, l = ps.length, j, us = new Array(l);
         us[0] = 0;
@@ -54,15 +68,30 @@ SF.FittedPolySpline = SC.Object.extend({
 
     /** Fit the points `pattern[start]` through `pattern[start+length-1]` using as many splines as necessary. I return an array of SF.CubicBezierSpline. */
     _fit: function (start, length, depth) {
+        var i, maxError = Math.max(.1, this.maxDistance * this.maxDistance), maxErrorIndex, d, error;
+
         if (length === 0)
             return [];
-        else if (depth >= this.maxDepth || length <= 4)
-            return [ SF.CubicBezierSpline.fit(this.pattern, this.parameters, start, length) ];
-        else {
-            var s2 = start + Math.floor(length / 2);
-            return this._fit(start, s2 - start + 1, depth + 1)
-                .concat(this._fit(s2, start + length - s2, depth + 1));
+
+        var spline = SF.CubicBezierSpline.fit(this.pattern, this.parameters, start, length);
+
+        if (depth === this.maxDepth)
+            return [ spline ];
+
+        for (i = 1; i < length - 1; ++i) {
+            d = spline.vectorAt(this.parameters[start+i]).minus(this.pattern[start+i]);
+            error = d.dot(d);
+            if (error > maxError) {
+                maxError = error;
+                maxErrorIndex = i;
+            }
         }
+
+        if (!maxErrorIndex)
+            return [ spline ];
+
+        return this._fit(start, maxErrorIndex - start + 1, depth + 1)
+            .concat(this._fit(maxErrorIndex, start + length - maxErrorIndex, depth + 1));
     }
 
 });

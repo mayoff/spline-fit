@@ -10,6 +10,16 @@ SF.CubicBezierSpline = function (c0, c1, c2, c3, umin, uscale) {
     Object.freeze(this);
 }
 
+/** Return the point on the curve for parameter value `u`, which is offset and scaled based on the `umin` and `uscale` parameters I was created with. */
+
+SF.CubicBezierSpline.prototype.vectorAt = function (u) {
+    var t = (u - this.umin) / this.uscale, tm = 1 - t;
+    return this.c0.times(tm*tm*tm)
+        .plus(this.c1.times(3*tm*tm*t))
+        .plus(this.c2.times(3*tm*t*t))
+        .plus(this.c3.times(t*t*t));
+};
+
 /** Fit a cubic Bezier spline to the points `pattern[start]` through `pattern[start+length-1]`, where `length > 0`.  If `length === 1`, all of the spline's control points are set to `pattern[start]`.  If `length === 2`, the spline is a straight line between the two pattern points.  If `length === 3`, the spline is a quadratic (degree 2) spline passing through the three pattern points, elevated to degree 3.  Otherwise, the spline minimizes the squared distances from the pattern points to the points on the spline determined by `parameters[start]` through `parameters[start+length-1]`. */
 SF.CubicBezierSpline.fit = function (pattern, parameters, start, length) {
     switch (length) {

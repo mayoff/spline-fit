@@ -24,6 +24,7 @@ SF.FitterPanel = SC.View.extend({
     shouldDrawPattern: true,
     shouldDrawControlPolygon: true,
     shouldDrawPolySpline: true,
+    shouldDrawCorrespondences: true,
 
     pointSize: 6,
 
@@ -42,7 +43,7 @@ SF.FitterPanel = SC.View.extend({
             };
         });
 
-        'shouldDrawPattern shouldDrawControlPolygon shouldDrawPolySpline *model.pattern.[] *model.controls.[] *model.parameters.[]'.w().forEach(function (key)
+        'shouldDrawPattern shouldDrawControlPolygon shouldDrawPolySpline shouldDrawCorrespondences *model.pattern.[] *model.controls.[] *model.parameters.[]'.w().forEach(function (key)
         {
             SC.addObserver(self, key, self, self.setNeedsDisplay);
         });
@@ -123,12 +124,14 @@ SF.FitterPanel = SC.View.extend({
         if (!this.model || this.model.pattern.length < 1)
             return;
 
-        if (this.shouldDrawPattern)
-            this._drawPattern();
         if (this.shouldDrawControlPolygon)
             this._drawControlPolygon();
+        if (this.shouldDrawPattern)
+            this._drawPattern();
         if (this.shouldDrawPolySpline)
             this._drawPolySpline();
+        if (this.shouldDrawCorrespondences)
+            this._drawCorrespondences();
     },
 
     _drawPattern: function () {
@@ -159,6 +162,18 @@ SF.FitterPanel = SC.View.extend({
             this._drawHollowPoint(spline.c2);
             this._drawPoint(spline.c3);
         }, this);
+    },
+
+    _drawCorrespondences: function () {
+        var gc = this.gc, model = this.model, ps = model.pattern, us = model.parameters, i, l = ps.length;
+        gc.lineWidth = 1;
+        gc.strokeStyle = 'red';
+        for (i = 0; i < l; ++i) {
+            gc.beginPath();
+            moveTo(gc, ps[i]);
+            lineTo(gc, model.vectorAt(us[i]));
+            gc.stroke();
+        }
     },
 
     _drawPolySpline: function () {
