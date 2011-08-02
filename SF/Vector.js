@@ -3,6 +3,7 @@
 SF.Vector = function (x, y) {
     this.x = x;
     this.y = y;
+    Object.freeze(this);
 }
 
 SF.Vector.prototype.plus = function (rhs) {
