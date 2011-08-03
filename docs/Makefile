@@ -1,6 +1,6 @@
 
 
-all: quadratic.html cubic-unconstrained.html
+all: quadratic.html cubic-unconstrained.html cubic-half-constrained.html
 
 %.html: %.md prefix.html
 	cat prefix.html > $@.new

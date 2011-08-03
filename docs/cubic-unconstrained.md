@@ -15,7 +15,7 @@ $$ B_{i,n}(t) = {n \choose i} t^i (1-t)^{n-i} = \frac{n!}{i!(n-i)!} t^i (1-t)^{n
 
 We let $0^0 = 1$ so that $B_{0,n}(0) = B_{n,n}(1) = 1$.
 
-Since $C(0) = c_0$ and $C(1) = c_3$, we set $c_0 = p_0$ and $c_3 = p_{n-1}$. We will choose $c_1$ and $c_2$ to minimize the sum of the squared distances between each $p_j$ and a corresponding point $C(u_j)$. Note that each $p_j$ has a corresponding parameter $u_j$ that we treat as a constant for this derivation.
+Since $C(0) = c_0$ and $C(1) = c_3$, we set $c_0 = p_0$ and $c_3 = p_{n-1}$. We will choose $c_1$ and $c_2$ to minimize the sum of the squared distances between each $p_j$ and a corresponding point $C(u_j)$. Note that each $p_j$ has a corresponding parameter $u_j$ that we treat as a given for this derivation.
 
 The sum of the squared distances mentioned above is $E = \sum_{j=1}^{n-2} (p_j - C(u_j))^2$. To find the $c_1$ that minimizes $E$, we set $\partial E/\partial c_1 = 0$.
 $$
