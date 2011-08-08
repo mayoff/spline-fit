@@ -1,4 +1,6 @@
 
+(function () {
+
 /** Create a CubicBezierSpline with control points `c0`, `c1`, `c2`, and `c3`, whose acceptable parameter values are between `umin` and `umin+uscale`. */
 SF.CubicBezierSpline = function (c0, c1, c2, c3, umin, uscale) {
     this.c0 = c0;
@@ -26,26 +28,26 @@ SF.CubicBezierSpline.fit = function (pattern, parameters, start, length) {
         case 0:
             throw new Error('SC.CubicBezierSpline.fit called with length === 0');
         case 1:
-            return this.fit1(pattern[start], parameters[start]);
+            return fit1(pattern[start], parameters[start]);
         case 2:
-            return this.fit2(pattern[start], pattern[start+1], parameters[start], parameters[start + 1]);
+            return fit2(pattern[start], pattern[start+1], parameters[start], parameters[start + 1]);
         case 3:
-            return this.fit3(pattern, parameters, start, length);
+            return fit3(pattern, parameters, start, length);
         default:
-            return this.fitMany(pattern, parameters, start, length);
+            return fitMany(pattern, parameters, start, length);
     }
 };
 
-SF.CubicBezierSpline.fit1 = function (p, u) {
-    return new this(p, p, p, p, u, 1);
+function fit1(p, u) {
+    return new SF.CubicBezierSpline(p, p, p, p, u, 1);
 };
 
-SF.CubicBezierSpline.fit2 = function (p0, p1, u0, u1) {
+function fit2(p0, p1, u0, u1) {
     var d = p1.minus(p0).times(1/3);
-    return new this(p0, p0.plus(d), p1.minus(d), p1, u0, u1-u0);
+    return new SF.CubicBezierSpline(p0, p0.plus(d), p1.minus(d), p1, u0, u1-u0);
 };
 
-SF.CubicBezierSpline.fit3 = function (ps, us, start) {
+function fit3(ps, us, start) {
     // I fit a quadratic Bezier cubic through the pattern points and elevate its degree to make it cubic.  See docs/quadratic.md for the math.
 
     var p0 = ps[start], p1 = ps[start+1], p2 = ps[start+2];
@@ -56,10 +58,10 @@ SF.CubicBezierSpline.fit3 = function (ps, us, start) {
     var c1 = p0.times(1/3).plus(q1_23);
     var c2 = p2.times(1/3).plus(q1_23);
 
-    return new this(p0, c1, c2, p2, umin, uscale);
+    return new SF.CubicBezierSpline(p0, c1, c2, p2, umin, uscale);
 };
 
-SF.CubicBezierSpline.fitMany = function (ps, us, start, length) {
+function fitMany(ps, us, start, length) {
     // See docs/cubic-unconsrained.md for the derivation.
 
     var umin = us[start], uscale = us[start+length-1] - umin,
@@ -90,11 +92,13 @@ SF.CubicBezierSpline.fitMany = function (ps, us, start, length) {
 
     d = m1 * m2 - m12 * m12;
 
-    return new this(ps[start],
+    return new SF.CubicBezierSpline(ps[start],
         new SF.Vector((b1x*m2 - b2x*m12) / d, (b1y*m2 - b2y*m12) / d),
         new SF.Vector((b2x*m1 - b1x*m12) / d, (b2y*m1 - b1y*m12) / d),
         ps[start+length-1],
         umin,
         uscale);
 };
+
+})();
 
