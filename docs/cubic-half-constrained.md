@@ -137,17 +137,22 @@ To make those cumbersome coefficients more manageable, we'll invent some shorter
 $$
 \begin{eqnarray}
 a m_{0,0} &+& c_{2,x} m_{0,1} &+& c_{2,y} m_{0,2} &=& b_0 \\
-a m_{1,0} &+& c_{2,x} m_{1,1} &+& c_{2,y} \times 0 &=& b_1 \\
-a m_{2,0} &+& c_{2,x} \times 0 &+& c_{2,y} m_{2,2} &=& b_2
+a m_{0,1} &+& c_{2,x} m_{1,1} &+& c_{2,y} \times 0 &=& b_1 \\
+a m_{0,2} &+& c_{2,x} \times 0 &+& c_{2,y} m_{1,1} &=& b_2
 \end{eqnarray}
 $$
-We can use whatever method we like, such as Gaussian elimination with partial pivoting, to solve this system.  If we're not worried about numerical instability, we can just use these equations:
+These equations solve the system:
 $$
 \begin{eqnarray}
-d &=& m_{0,2} m_{1,1} m_{2,0} + m_{0,1} m_{1,0} m_{2,2} - m_{0,0} m_{1,1} m_{2,2} \\
-a &=& d^{-1} (b_2 m_{0,2} m_{1,1} + b_1 m_{0,1} m_{2,2} - b_0 m_{1,1} m_{2,2}) \\
-c_{2,x} &=& d^{-1} (b_1 m_{0,2} m_{2,0} + b_0 m_{1,0} m_{2,2} - b_1 m_{0,0} m_{2,2} - b_2 m_{0,2} m_{1,0}) \\
-c_{2,y} &=& d^{-1} (b_2 m_{0,1} m_{1,0} + b_0 m_{1,1} m_{2,0} - b_2 m_{0,0} m_{1,1} - b_1 m_{0,1} m_{2,0})
+d &=& m_{1,1} ( {m_{0,1}}^2 + {m_{0,2}}^2 - m_{0,0} m_{1,1} ) \\
+a &=& d^{-1} m_{1,1} ( b_1 m_{0,1} + b_2 m_{0,2} - b_0 m_{1,1} ) \\
+c_{2,x} &=& d^{-1} \left( b_1 ( {m_{0,2}}^2 - m_{0,0} m_{1,1} ) + m_{0,1} ( b_0 m_{1,1} - b_2 m_{0,2} ) \right) \\
+c_{2,y} &=& d^{-1} \left( b_2 ( {m_{0,1}}^2 - m_{0,0} m_{1,1} ) + m_{0,2} ( b_0 m_{1,1} - b_1 m_{0,1} ) \right)
 \end{eqnarray}
 $$
+
+### Constrained on the other end
+
+What if we want the constraint to be on $\c_2$ rather than $\c_1$?  We can get this effect by reversing the $u$s (setting each $u_j$ to $1 - u_j$), computing the control points with the constraint on $\c_1$, and then reversing the control points ($\c_0 \leftrightarrow \c_3$ and $\c_1 \leftrightarrow \c_2$).
+
 
