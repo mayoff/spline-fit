@@ -73,7 +73,12 @@ SF.FittedPolySpline = SC.Object.extend({
         if (length === 0)
             return [];
 
-        var spline = SF.CubicBezierSpline.fit(this.pattern, this.parameters, start, length);
+        var spline = SF.CubicBezierSpline.fit({
+            pattern: this.pattern,
+            parameters: this.parameters,
+            start: start,
+            length: length
+        });
 
         if (depth === this.maxDepth)
             return [ spline ];
