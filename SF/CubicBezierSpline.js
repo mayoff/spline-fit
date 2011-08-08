@@ -41,7 +41,19 @@ SF.CubicBezierSpline.fit = function (a) {
         case 3:
             return fit3(a);
         default:
-            return fitMany(a);
+            if ('startTangent' in a) {
+                if ('endTangent' in a) {
+                    // XXX use tangents
+                    // return fitTwoTangents(a);
+                    return fitNoTangents(a);
+                } else {
+                    return fitOneTangent(a);
+                }
+            } else if ('endTangent' in a) {
+                return fitOneTangent(a);
+            } else {
+                return fitNoTangents(a);
+            }
     }
 };
 
@@ -72,10 +84,8 @@ function fit3(a) {
     return new SF.CubicBezierSpline(p0, c1, c2, p2, umin, uscale);
 };
 
-function fitMany(a) {
+function fitNoTangents(a) {
     // See docs/cubic-unconstrained.md for the derivation.
-
-    // xxx make this use startTangent/endTangent
 
     var ps = a.pattern, us = a.parameters, start = a.start, length = a.length;
 
@@ -114,6 +124,85 @@ function fitMany(a) {
         umin,
         uscale);
 };
+
+function fitOneTangent(a) {
+    // See docs/cubic-half-constrained.md for the derivation.
+
+    var ps = a.pattern, us = a.parameters, start = a.start, length = a.length,
+        tangent, flip;
+
+    if ('startTangent' in a) {
+        tangent = a.startTangent;
+        flip = false;
+    } else {
+        tangent = a.endTangent;
+        flip = true;
+    }
+
+    var umin = us[start], uscale = us[start+length-1] - umin,
+        u, j, B0, B1, B2, B3, sumB1B1 = 0, sumB1B2 = 0, sumB2B2 = 0,
+        m00, m01, m02, m11,
+        p, x = 0, y = 0, c0x, c0y, c3x, c3y,
+        b0 = 0, b1 = 0, b2 = 0,
+        vx = tangent.x, vy = tangent.y,
+        d, a, c1x, c1y;
+
+    c0x = ps[start].x;
+    c0y = ps[start].y;
+    c3x = ps[start+length-1].x;
+    c3y = ps[start+length-1].y;
+
+    if (flip) {
+        // This has the effect of reversing the order of the pattern points.
+        umin += uscale;
+        uscale = -uscale;
+        j = c0x; c0x = c3x; c3x = j;
+        j = c0y; c0y = c3y; c3y = j;
+    }
+
+    for (j = 0; j < length; ++j) {
+        u = (us[start+j] - umin) / uscale;
+        B0 = (1-u) * (1-u) * (1-u);
+        B1 = 3 * (1-u) * (1-u) * u;
+        B2 = 3 * (1-u) * u * u;
+        B3 = u * u * u;
+        sumB1B1 += B1 * B1;
+        sumB1B2 += B1 * B2;
+        sumB2B2 += B2 * B2;
+        p = ps[start + j];
+        x += (p.x - c0x * (B0 + B1) - c3x * B3);
+        y += (p.y - c0y * (B0 + B1) - c3x * B3);
+        b0 += (x * vx + y * vy) * B1;
+        b1 += x * B2;
+        b2 += y * B2;
+    }
+
+    m00 = sumB1B1;
+    m01 = vx * sumB1B2;
+    m02 = vy * sumB1B2;
+    m11 = sumB2B2;
+
+    d = m11 * (m01*m01 + m02*m02 - m00*m11);
+    a = m11 * (b1 * m01 + b2 * m02 - b0 * m11) / d;
+    c1x = (b1 * (m02*m02 - m00*m11) + m01 * (b0*m11 - b2*m02)) / d;
+    c1y = (b2 * (m01*m01 - m00*m11) + m02 * (b0*m11 - b1*m01)) / d;
+
+    if (flip) {
+        return new SF.CubicBezierSpline(ps[start],
+            new SF.Vector(c3x + a * vx, c3y + a * vy),
+            new SF.Vector(c1x, c1y),
+            ps[start+length-1],
+            us[start],
+            -uscale);
+    } else {
+        return new SF.CubicBezierSpline(ps[start],
+            new SF.Vector(c1x, c1y),
+            new SF.Vector(c3x + a * vx, c3y + a * vy),
+            ps[start+length-1],
+            umin,
+            uscale);
+    }
+}
 
 })();
 
