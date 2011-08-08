@@ -41,15 +41,15 @@ SF.CubicBezierSpline.fit = function (a) {
         case 3:
             return fit3(a);
         default:
-            if ('startTangent' in a) {
-                if ('endTangent' in a) {
+            if (a.startTangent) {
+                if (a.endTangent) {
                     // XXX use tangents
                     // return fitTwoTangents(a);
                     return fitNoTangents(a);
                 } else {
                     return fitOneTangent(a);
                 }
-            } else if ('endTangent' in a) {
+            } else if (a.endTangent) {
                 return fitOneTangent(a);
             } else {
                 return fitNoTangents(a);
@@ -131,7 +131,7 @@ function fitOneTangent(a) {
     var ps = a.pattern, us = a.parameters, start = a.start, length = a.length,
         tangent, flip;
 
-    if ('startTangent' in a) {
+    if (a.startTangent) {
         tangent = a.startTangent;
         flip = false;
     } else {

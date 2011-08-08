@@ -67,7 +67,7 @@ SF.FittedPolySpline = SC.Object.extend({
     },
 
     /** Fit the points `pattern[start]` through `pattern[start+length-1]` using as many splines as necessary. I return an array of SF.CubicBezierSpline. */
-    _fit: function (start, length, depth) {
+    _fit: function (start, length, depth, startTangent, endTangent) {
         var i, maxError = Math.max(.1, this.maxDistance * this.maxDistance), maxErrorIndex, d, error;
 
         if (length === 0)
@@ -77,7 +77,9 @@ SF.FittedPolySpline = SC.Object.extend({
             pattern: this.pattern,
             parameters: this.parameters,
             start: start,
-            length: length
+            length: length,
+            startTangent: startTangent,
+            endTangent: endTangent
         });
 
         if (depth === this.maxDepth)
