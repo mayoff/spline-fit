@@ -28,29 +28,22 @@ SF.CubicBezierSpline.prototype.vectorAt = function (u) {
 
     If `a.endTangent` exists, I will try to make the fitted curve have `-a.endTangent` as its tangent vector at parameter value 1. */
 SF.CubicBezierSpline.fit = function (a) {
-    var start = a.start, ps = a.pattern, us = a.parameters;
-    switch (a.length) {
-        case 0:
-            throw new Error('SC.CubicBezierSpline.fit called with length === 0');
-        case 1:
-            // xxx make this use startTangent/endTangent?
-            return fit1(ps[start], us[start]);
-        case 2:
-            return fit2(a);
-        case 3:
-            return fit3(a);
-        default:
-            if (a.startTangent) {
-                if (a.endTangent) {
-                    return fitTwoTangents(a);
-                } else {
-                    return fitOneTangent(a);
-                }
-            } else if (a.endTangent) {
-                return fitOneTangent(a);
-            } else {
-                return fitNoTangents(a);
-            }
+    var start = a.start, ps = a.pattern, us = a.parameters, length = a.length, tangentsCount = (a.startTangent ? 1 : 0) + (a.endTangent ? 1 : 0);
+
+    switch (length) {
+        case 0: throw new Error('SC.CubicBezierSpline.fit called with length === 0');
+        case 1: return fit1(ps[start], us[start]);
+        case 2: return fit2(a);
+        case 3: switch (tangentsCount) {
+            case 0: return fit3NoTangents(a);
+            case 1: return fit3OneTangent(a);
+            case 2: return fitTwoTangents(a); // cubic fitting works
+        }
+        default: switch (tangentsCount) {
+            case 0: return fitNoTangents(a);
+            case 1: return fitOneTangent(a);
+            case 2: return fitTwoTangents(a);
+        }
     }
 };
 
@@ -69,10 +62,8 @@ function fit2(a) {
     return new SF.CubicBezierSpline(p0, c1, c2, p1, u0, u1-u0);
 };
 
-function fit3(a) {
-    // I fit a quadratic Bezier cubic through the pattern points and elevate its degree to make it cubic.  See docs/quadratic.md for the math.
-
-    // xxx make this use startTangent/endTangent
+function fit3NoTangents(a) {
+    // I fit a quadratic Bezier cubic through the pattern points and elevate its degree to make it cubic.  See docs/quadratic.md for the derivation.
 
     var ps = a.pattern, us = a.parameters, start = a.start;
 
@@ -86,6 +77,58 @@ function fit3(a) {
 
     return new SF.CubicBezierSpline(p0, c1, c2, p2, umin, uscale);
 };
+
+function fit3OneTangent(a) {
+    // See docs/quadratic-half-constrained.md for the derivation.
+    var ps = a.pattern, us = a.parameters, start = a.start, tangent, flip;
+
+    if (a.startTangent) {
+        tangent = a.startTangent;
+        flip = false;
+    } else {
+        tangent = a.endTangent;
+        flip = true;
+    }
+
+    var umin = us[start], uscale = us[start+2] - umin;
+    var q0 = ps[start], q2 = ps[start+2], p1 = ps[start+1];
+
+    if (flip) {
+        umin += uscale;
+        uscale = -uscale;
+        var t = q2; q2 = q0; q0 = t;
+    }
+
+    var u = (us[start+1] - umin) / uscale;
+    var B0 = (1 - u) * (1 - u),
+        B1 = 2 * (1 - u) * u,
+        B2 = u * u;
+    var x = p1.x - q0.x * (B0 + B1) - q2.x * B2;
+    var y = p1.y - q0.y * (B0 + B1) - q2.y * B2;
+    var a = (x * tangent.x + y * tangent.y) / B1;
+
+    var q1_23 = tangent.times(a).plus(q0).times(2/3);
+
+    if (flip) {
+        return new SF.CubicBezierSpline(
+            q2,
+            q2.times(1/3).plus(q1_23),
+            q0.times(1/3).plus(q1_23),
+            q0,
+            us[start],
+            -uscale
+        );
+    } else {
+        return new SF.CubicBezierSpline(
+            q0,
+            q0.times(1/3).plus(q1_23),
+            q2.times(1/3).plus(q1_23),
+            q2,
+            umin,
+            uscale
+        );
+    }
+}
 
 function fitNoTangents(a) {
     // See docs/cubic-unconstrained.md for the derivation.
