@@ -42,9 +42,7 @@ SF.CubicBezierSpline.fit = function (a) {
         default:
             if (a.startTangent) {
                 if (a.endTangent) {
-                    // XXX use tangents
-                    // return fitTwoTangents(a);
-                    return fitNoTangents(a);
+                    return fitTwoTangents(a);
                 } else {
                     return fitOneTangent(a);
                 }
@@ -207,6 +205,41 @@ function fitOneTangent(a) {
             umin,
             uscale);
     }
+}
+
+function fitTwoTangents(a) {
+    // See "An Algorithm for Automatically Fitting Digitized Curves" by Philip J. Schneider for the derivation.
+
+    var ps = a.pattern, us = a.parameters, start = a.start, length = a.length, t1 = a.startTangent, t2 = a.endTangent;
+    var umin = us[start], uscale = us[start+length-1] - umin;
+    var c0 = ps[start], c3 = ps[start+length-1];
+    var c0x = c0.x, c0y = c0.y, c3x = c3.x, c3y = c3.y;
+    var t1x = t1.x, t1y = t1.y, t2x = t2.x, t2y = t2.y, t1t2 = t1.dot(t2);
+
+    var m00 = 0, m01 = 0, m11 = 0;
+    var b0 = 0, b1 = 0;
+
+    for (var j = 0; j < length; ++j) {
+        var u = (us[start+j] - umin) / uscale;
+        var B0 = (1-u) * (1-u) * (1-u),
+            B1 = 3 * (1-u) * (1-u) * u,
+            B2 = 3 * (1-u) * u * u,
+            B3 = u * u * u;
+        m00 += B1 * B1;
+        m01 += t1t2 * B1 * B2;
+        m11 += B2 * B2;
+        var p = ps[start+j];
+        var x = p.x - c0x * (B0 + B1) - c3x * (B2 + B3);
+        var y = p.y - c0y * (B0 + B1) - c3y * (B2 + B3);
+        b0 += B1 * (x * t1x + y * t1y);
+        b1 += B2 * (x * t2x + y * t2y);
+    }
+;
+    var d = m00*m11 - m01*m01;
+    var a1 = (b0*m11 - b1*m01) / d;
+    var a2 = (b1*m00 - b0*m01) / d;
+
+    return new SF.CubicBezierSpline(c0, c0.plus(t1.times(a1)), c3.plus(t2.times(a2)), c3, umin, uscale);
 }
 
 })();
