@@ -26,3 +26,8 @@ SF.Vector.prototype.norm = function () {
     return Math.sqrt(this.x * this.x + this.y * this.y);
 };
 
+SF.Vector.prototype.toUnit = function () {
+    var norm = this.norm();
+    return new SF.Vector(this.x / norm, this.y / norm);
+};
+
