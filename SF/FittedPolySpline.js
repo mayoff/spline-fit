@@ -68,7 +68,7 @@ SF.FittedPolySpline = SC.Object.extend({
 
     /** Fit the points `pattern[start]` through `pattern[start+length-1]` using as many splines as necessary. I return an array of SF.CubicBezierSpline. */
     _fit: function (start, length, depth, startTangent, endTangent) {
-        var i, maxError = Math.max(.1, this.maxDistance * this.maxDistance), maxErrorIndex, d, error;
+        var i, maxError = Math.max(.1, this.maxDistance * this.maxDistance), maxErrorIndex, d, error, middleTangent;
 
         if (length === 0)
             return [];
@@ -97,8 +97,11 @@ SF.FittedPolySpline = SC.Object.extend({
         if (!maxErrorIndex)
             return [ spline ];
 
-        return this._fit(start, maxErrorIndex - start + 1, depth + 1)
-            .concat(this._fit(maxErrorIndex, start + length - maxErrorIndex, depth + 1));
+        middleTangent = this.pattern[maxErrorIndex+1].minus(this.pattern[maxErrorIndex-1]) .toUnit();
+        // XXX middleTangent could be undefined if the two points were identical.
+
+        return this._fit(start, maxErrorIndex - start + 1, depth + 1, startTangent, middleTangent)
+            .concat(this._fit(maxErrorIndex, start + length - maxErrorIndex, depth + 1, middleTangent, endTangent));
     }
 
 });
