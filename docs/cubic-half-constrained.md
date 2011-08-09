@@ -22,7 +22,7 @@ $$ B_{i,n}(t) = {n \choose i} t^i (1-t)^{n-i} = \frac{n!}{i!(n-i)!} t^i (1-t)^{n
 
 We let $0^0 = 1$ so that $B_{0,n}(0) = B_{n,n}(1) = 1$.
 
-We are given $\c_0 = \p_0$ and $\c_3 = \p_{n-1}$. We are also given a unit vector $\vh = v_x \xh + v_y \yh$ and the constraint that $\c_1 = \c_0 + a \vh$ for some $a > 0$. We are also given a parameter value $u_j$ for each $\p_j$, with $u_0 = 0$, $u_{n-1} = 1$, and $u_{j} < u_{j+1}$ for $0 \le j \lt n-1$.
+We are given $\c_0 = \p_0$ and $\c_3 = \p_{n-1}$. We are also given a unit vector $\vh = v_x \xh + v_y \yh$ and the constraint that $\c_1 = \c_0 + a \vh$ for some $a$. We are also given a parameter value $u_j$ for each $\p_j$, with $u_0 = 0$, $u_{n-1} = 1$, and $u_{j} < u_{j+1}$ for $0 \le j \lt n-1$.
 
 We need to choose $a$, $c_{2,x}$, and $c_{2,y}$ (where $\c_2 = c_{2,x}\xh + c_{2,y}\yh$) to define the curve $\C(t)$.  Each $\p_j$ will then have a corresponding point on the curve, $\C(u_j)$.  The square of the distance between $\p_j$ and $\C(u_j)$ is $(\p_j - \C(u_j))\cdot(\p_j - \C(u_j))$, which we'll write $(\p_j - \C(u_j))^2$.  The sum of all such distances is $E = \sum_{j=0}^{n-1} (\p_j - \C(u_j))^2$.  We'll choose $a$, $c_{2,x}$, and $c_{2,y}$ to minimize $E$.
 
@@ -155,4 +155,7 @@ $$
 
 What if we want the constraint to be on $\c_2$ rather than $\c_1$?  We can get this effect by reversing the $u$s (setting each $u_j$ to $1 - u_j$), computing the control points with the constraint on $\c_1$, and then reversing the control points ($\c_0 \leftrightarrow \c_3$ and $\c_1 \leftrightarrow \c_2$).
 
+### Three points given
+
+If $n = 3$ (meaning we're given only three points to fit, plus $\vh$), our linear system will be singular.  This means there is no unique solution, and in the equations above, $d$ will be zero, so we can't use those equations to fit a curve.
 
