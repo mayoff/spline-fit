@@ -26,7 +26,7 @@ SF.FitterPanel = SC.View.extend({
     shouldDrawPolySpline: true,
     shouldDrawCorrespondences: true,
 
-    pointSize: 6,
+    pointSize: 4,
 
     patternPointMinDistance: null,
 
