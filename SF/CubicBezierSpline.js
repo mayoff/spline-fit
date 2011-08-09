@@ -145,7 +145,7 @@ function fitOneTangent(a) {
         p, x = 0, y = 0, c0x, c0y, c3x, c3y,
         b0 = 0, b1 = 0, b2 = 0,
         vx = tangent.x, vy = tangent.y,
-        d, a, c1x, c1y;
+        d, a, c2x, c2y;
 
     c0x = ps[start].x;
     c0y = ps[start].y;
@@ -170,8 +170,8 @@ function fitOneTangent(a) {
         sumB1B2 += B1 * B2;
         sumB2B2 += B2 * B2;
         p = ps[start + j];
-        x += (p.x - c0x * (B0 + B1) - c3x * B3);
-        y += (p.y - c0y * (B0 + B1) - c3x * B3);
+        x = (p.x - c0x * (B0 + B1) - c3x * B3);
+        y = (p.y - c0y * (B0 + B1) - c3y * B3);
         b0 += (x * vx + y * vy) * B1;
         b1 += x * B2;
         b2 += y * B2;
@@ -184,20 +184,20 @@ function fitOneTangent(a) {
 
     d = m11 * (m01*m01 + m02*m02 - m00*m11);
     a = m11 * (b1 * m01 + b2 * m02 - b0 * m11) / d;
-    c1x = (b1 * (m02*m02 - m00*m11) + m01 * (b0*m11 - b2*m02)) / d;
-    c1y = (b2 * (m01*m01 - m00*m11) + m02 * (b0*m11 - b1*m01)) / d;
+    c2x = (b1 * (m02*m02 - m00*m11) + m01 * (b0*m11 - b2*m02)) / d;
+    c2y = (b2 * (m01*m01 - m00*m11) + m02 * (b0*m11 - b1*m01)) / d;
 
     if (flip) {
         return new SF.CubicBezierSpline(ps[start],
-            new SF.Vector(c3x + a * vx, c3y + a * vy),
-            new SF.Vector(c1x, c1y),
+            new SF.Vector(c2x, c2y),
+            new SF.Vector(c0x + a * vx, c0y + a * vy),
             ps[start+length-1],
             us[start],
             -uscale);
     } else {
         return new SF.CubicBezierSpline(ps[start],
-            new SF.Vector(c1x, c1y),
-            new SF.Vector(c3x + a * vx, c3y + a * vy),
+            new SF.Vector(c0x + a * vx, c0y + a * vy),
+            new SF.Vector(c2x, c2y),
             ps[start+length-1],
             umin,
             uscale);
