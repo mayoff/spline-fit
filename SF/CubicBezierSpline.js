@@ -36,8 +36,7 @@ SF.CubicBezierSpline.fit = function (a) {
             // xxx make this use startTangent/endTangent?
             return fit1(ps[start], us[start]);
         case 2:
-            // xxx make this use startTangent/endTangent
-            return fit2(ps[start], ps[start+1], us[start], us[start+1]);
+            return fit2(a);
         case 3:
             return fit3(a);
         default:
@@ -61,9 +60,15 @@ function fit1(p, u) {
     return new SF.CubicBezierSpline(p, p, p, p, u, 1);
 };
 
-function fit2(p0, p1, u0, u1) {
-    var d = p1.minus(p0).times(1/3);
-    return new SF.CubicBezierSpline(p0, p0.plus(d), p1.minus(d), p1, u0, u1-u0);
+function fit2(a) {
+    var start = a.start, ps = a.pattern, us = a.parameters, p0 = ps[start], p1 = ps[start+1], u0 = us[start], u1 = us[start+1];
+    var difference = p1.minus(p0), offset, tangentScale, defaultTangent, c1, c2;
+        tangentScale = difference.norm() / 3;
+    if (!a.startTangent || !a.endTangent)
+        defaultTangent = difference.times(1/3);
+    c1 = p0.plus(a.startTangent ? a.startTangent.times(tangentScale) : defaultTangent);
+    c2 = p1.minus(a.endTangent ? a.endTangent.times(tangentScale) : defaultTangent);
+    return new SF.CubicBezierSpline(p0, c1, c2, p1, u0, u1-u0);
 };
 
 function fit3(a) {
