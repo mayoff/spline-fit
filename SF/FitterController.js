@@ -14,9 +14,9 @@ SF.FitterController = SC.Object.extend({
     _allPoints: null,
 
     init: function () {
+        var self = this;
         this.model = SF.FittedPolySpline.create();
         SC.addObserver(this, '*view.patternPointMinDistance', this, this.patternPointMinDistanceDidChange);
-        SC.addObserver(this, '*model.maxDistance', this.model, this.model.fit);
     },
 
     beginPattern: function () {

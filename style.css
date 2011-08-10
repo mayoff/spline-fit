@@ -103,6 +103,10 @@ DIV.sf-slider {
     display: inline;
 }
 
+DIV.wide > INPUT[type="range"] {
+    width: 100%;
+}
+
 
 
 

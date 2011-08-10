@@ -9,6 +9,16 @@ SF.CubicBezierSpline = function (c0, c1, c2, c3, umin, uscale) {
     this.c3 = c3;
     this.umin = umin;
     this.uscale = uscale;
+
+    // First derivative control points - q for quadratic
+    this.q0 = c1.minus(c0).times(3);
+    this.q1 = c2.minus(c1).times(3);
+    this.q2 = c3.minus(c2).times(3);
+
+    // Second derivative control points - l for linear
+    this.l0 = this.q1.minus(this.q0).times(2);
+    this.l1 = this.q2.minus(this.q1).times(2);
+
     Object.freeze(this);
 }
 
@@ -16,10 +26,41 @@ SF.CubicBezierSpline = function (c0, c1, c2, c3, umin, uscale) {
 
 SF.CubicBezierSpline.prototype.vectorAt = function (u) {
     var t = (u - this.umin) / this.uscale, tm = 1 - t;
-    return this.c0.times(tm*tm*tm)
-        .plus(this.c1.times(3*tm*tm*t))
-        .plus(this.c2.times(3*tm*t*t))
-        .plus(this.c3.times(t*t*t));
+    var x = this.c0.x * tm * tm * tm + this.c1.x * 3 * tm * tm * t
+        + this.c2.x * 3 * tm * t * t + this.c3.x * t * t * t;
+    var y = this.c0.y * tm * tm * tm + this.c1.y * 3 * tm * tm * t
+        + this.c2.y * 3 * tm * t * t + this.c3.y * t * t * t;
+    return new SF.Vector(x, y);
+};
+
+/** Return the derivative vector of the curve for parameter value `u`. */
+
+SF.CubicBezierSpline.prototype.derivativeAt = function (u) {
+    var t = (u - this.umin) / this.uscale, tm = 1 - t;
+    var x = this.q0.x * tm * tm + this.q1.x * 2 * tm * t + this.q2.x * t * t;
+    var y = this.q0.y * tm * tm + this.q1.y * 2 * tm * t + this.q2.y * t * t;
+    return new SF.Vector(x, y);
+};
+
+/** Return the second derivative vector of the curve for parameter value `u`. */
+
+SF.CubicBezierSpline.prototype.secondDerivativeAt = function (u) {
+    var t = (u - this.umin) / this.uscale, tm = 1-t;
+    return new SF.Vector(
+        this.l0.x * tm + this.l1.x * t,
+        this.l0.y * tm + this.l1.y * t
+    );
+};
+
+/** Return a hopefully-better parameter for the point `p`, starting at parameter `u`.  I will run up to `maxIterations` iterations.
+
+    XXX Make this take maxError and check it. */
+SF.CubicBezierSpline.prototype.improveParameter = function (p, u, maxIterations) {
+    while (maxIterations--) {
+        var C = this.vectorAt(u), Q = this.derivativeAt(u), L = this.secondDerivativeAt(u);
+        u -= this.umin + this.uscale * (p.dot(Q) - C.dot(Q)) / (p.dot(L) - C.dot(L) - Q.dot(Q));
+    }
+    return u;
 };
 
 /** Fit a cubic Bezier spline to the points `a.pattern[start]` through `a.pattern[a.start+a.length-1]`. If `a.length === 1`, all of the spline's control points are set to `a.pattern[a.start]`.  If `a.length === 2`, the spline is a straight line between the two pattern points.  If `a.length === 3`, the spline is a quadratic (degree 2) spline passing through the three pattern points, elevated to degree 3.  Otherwise, the spline minimizes the squared distances from the pattern points to the points on the spline determined by `a.parameters[a.start]` through `a.parameters[a.start+a.length-1]`.

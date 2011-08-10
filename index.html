@@ -17,7 +17,7 @@
     <script type='text/html' data-view='SF.FitterPanel'>
         <hbox>
             <vbox class='left'>
-                <canvas class='fitter-canvas' width='500' height='500'></canvas>
+                <canvas class='fitter-canvas' width='600' height='600'></canvas>
                 <hbox style='width: 100%'>
                     <div class='flex'>{{splineCountString}} fitted to a pattern of {{patternLengthString}}</div>
                     <spring></spring>
@@ -35,9 +35,14 @@
                         <td>{{view SC.Checkbox title="Draw correspondences" valueBinding="parentView.shouldDrawCorrespondences"}}</td>
                     </tr>
                 </table>
-                <div>{{view SF.Slider min=1 max=50 valueBinding="parentView.patternPointMinDistance"}} {{patternPointMinDistance}} is the minimum distance between consecutive pattern points</div>
+                <div>{{view SF.Slider class="wide" min="0.1" max="50.0" step="0.1" valueBinding="parentView.patternPointMinDistance"}} {{patternPointMinDistance}} is the minimum distance between consecutive pattern points</div>
                 <div>{{view SF.Slider min=0 max=10 valueBinding="parentView.model.maxDepth"}} {{model.maxDepth}} is the maximum recursion depth</div>
-                <div>{{view SF.Slider min=0 max=20 step=".1" valueBinding="parentView.model.maxDistance"}} {{model.maxDistance}} is the maximum distance between the pattern and the curve</div>
+                <div>{{view SF.Slider min="0.0" max="20.0" step="0.1" valueBinding="parentView.model.maxDistance"}} Split a spline if the pattern is more than {{model.maxDistance}} pixels away from it</div>
+                <div>{{view SF.Slider min="0.0" max="150.0" step="0.1" valueBinding="parentView.model.maxImproveDistance"}} Skip refitting a spline if the pattern is more than {{model.maxImproveDistance}} pixels away from it</div>
+                <div>{{view SF.Slider min=0 max=5
+                    valueBinding="parentView.model.maxImprovements"}} Improve parameter values up to {{maxImprovementsString}} before refitting</div>
+                <div>{{view SF.Slider min=1 max=20 valueBinding="parentView.model.maxRefits"}} Refit each spline up to {{maxRefitsString}} before subdividing</div>
+                <div>{{view SC.Checkbox title="Refit after last round of parameter improvements" valueBinding="parentView.model.wantFinalRefit"}}</div>
             </vbox>
         </hbox>
     </script>

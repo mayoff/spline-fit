@@ -31,3 +31,8 @@ SF.Vector.prototype.toUnit = function () {
     return new SF.Vector(this.x / norm, this.y / norm);
 };
 
+/** Return a vector perpendicular to myself by rotating myself clockwise by 90 degrees. */
+SF.Vector.prototype.perp = function () {
+    return new SF.Vector(this.y, -this.x);
+};
+
