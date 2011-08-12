@@ -178,7 +178,6 @@ Math.TWO_PI = Math.PI * 2;
             preserveContext: false,
             shouldDisplayFunc: function () { return true; },
             displayTemplate: function (number) {
-                console.log('bindView displayTemplate', arguments, options);
                 var numberString = +number + '';
                 var format = specificFormats.hasOwnProperty(numberString)
                     ? specificFormats[numberString]
