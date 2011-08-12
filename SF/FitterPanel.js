@@ -54,30 +54,6 @@ SF.FitterPanel = SC.View.extend({
         this.controller = SF.FitterController.create({ view: this });
     },
 
-    patternLengthBinding: '*model.pattern.length',
-
-    patternLengthString: function () {
-        return (this.patternLength === 1) ? '1 point' : (+this.patternLength + ' points');
-    }.property('patternLength'),
-
-    splineCountBinding: '*model.splines.length',
-
-    splineCountString: function () {
-        return (this.splineCount === 1) ? '1 spline' : (+this.splineCount + ' splines');
-    }.property('splineCount'),
-
-    maxImprovementsBinding: '*model.maxImprovements',
-
-    maxImprovementsString: function () {
-        return (this.maxImprovements === 1) ? '1 time' : (+this.maxImprovements + ' times');
-    }.property('maxImprovements'),
-
-    maxRefitsBinding: '*model.maxRefits',
-
-    maxRefitsString: function () {
-        return (this.maxRefits === 1) ? '1 time' : (+this.maxRefits + ' times');
-    }.property('maxRefits'),
-
     willInsertElement: function () {
         this.canvas = this.$('.fitter-canvas')[0];
         this.canvas.addEventListener('mousedown', this.mousedownHandler);

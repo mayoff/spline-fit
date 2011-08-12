@@ -95,6 +95,24 @@ a:hover { color: #036; }
     border: 1px solid black;
 }
 
+.fitter-panel TABLE {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.fitter-panel TD:first-child {
+    width: 200px;
+    padding: 2px 2px;
+}
+
+.fitter-panel TABLE * {
+    vertical-align: top;
+}
+
+.fitter-panel INPUT[type="range"] {
+    width: 100%;
+}
+
 LABEL > INPUT[type="checkbox"] {
     margin-right: .5em;
 }
@@ -103,8 +121,8 @@ DIV.sf-slider {
     display: inline;
 }
 
-DIV.wide > INPUT[type="range"] {
-    width: 100%;
+B {
+    font-weight: bold;
 }
 
 

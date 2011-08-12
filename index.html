@@ -19,30 +19,59 @@
             <vbox class='left'>
                 <canvas class='fitter-canvas' width='600' height='600'></canvas>
                 <hbox style='width: 100%'>
-                    <div class='flex'>{{splineCountString}} fitted to a pattern of {{patternLengthString}}</div>
+                    <div class='flex'>{{number model.splines.length
+                    "%d splines" 0="No splines" 1="<b>One</b> spline"}} fitted to {{number model.pattern.length "<b>%d</b> pattern points" 0="an empty pattern" 1="<b>one</b> pattern point"}}</div>
                     <spring></spring>
                     {{#view SC.Button target="parentView.model" action="fit"}}
                         Refit
                     {{/view}}
                 </hbox>
-                <table style='width: 100%'>
+                <table>
                     <tr>
-                        <td>{{view SC.Checkbox title="Draw the pattern" valueBinding="parentView.shouldDrawPattern"}}</td>
-                        <td>{{view SC.Checkbox title="Draw the control polygon" valueBinding="parentView.shouldDrawControlPolygon"}}</td>
+                        <td>{{view SC.Checkbox title="Draw the pattern" valueBinding="shouldDrawPattern"}}</td>
+                        <td>{{view SC.Checkbox title="Draw the control polygon" valueBinding="shouldDrawControlPolygon"}}</td>
                     </tr>
                     <tr>
-                        <td>{{view SC.Checkbox title="Draw the fitted polyspline" valueBinding="parentView.shouldDrawPolySpline"}}</td>
-                        <td>{{view SC.Checkbox title="Draw correspondences" valueBinding="parentView.shouldDrawCorrespondences"}}</td>
+                        <td>{{view SC.Checkbox title="Draw the fitted polyspline" valueBinding="shouldDrawPolySpline"}}</td>
+                        <td>{{view SC.Checkbox title="Draw correspondences" valueBinding="shouldDrawCorrespondences"}}</td>
                     </tr>
                 </table>
-                <div>{{view SF.Slider class="wide" min="0.1" max="50.0" step="0.1" valueBinding="parentView.patternPointMinDistance"}} {{patternPointMinDistance}} is the minimum distance between consecutive pattern points</div>
-                <div>{{view SF.Slider min=0 max=10 valueBinding="parentView.model.maxDepth"}} {{model.maxDepth}} is the maximum recursion depth</div>
-                <div>{{view SF.Slider min="0.0" max="20.0" step="0.1" valueBinding="parentView.model.maxDistance"}} Split a spline if the pattern is more than {{model.maxDistance}} pixels away from it</div>
-                <div>{{view SF.Slider min="0.0" max="150.0" step="0.1" valueBinding="parentView.model.maxImproveDistance"}} Skip refitting a spline if the pattern is more than {{model.maxImproveDistance}} pixels away from it</div>
-                <div>{{view SF.Slider min=0 max=5
-                    valueBinding="parentView.model.maxImprovements"}} Improve parameter values up to {{maxImprovementsString}} before refitting</div>
-                <div>{{view SF.Slider min=1 max=20 valueBinding="parentView.model.maxRefits"}} Refit each spline up to {{maxRefitsString}} before subdividing</div>
-                <div>{{view SC.Checkbox title="Refit after last round of parameter improvements" valueBinding="parentView.model.wantFinalRefit"}}</div>
+                <table>
+                    <tr>
+                        <td>{{view SF.Slider class="wide" min="0.5" max="50.0" step="any" valueBinding="patternPointMinDistance"}}</td>
+                        <td>At least <b>{{number patternPointMinDistance "%.2f"}}</b> pixels between consecutive pattern points</td>
+                    </tr>
+                    <tr>
+                        <td>{{view SF.Slider min=0 max=10 valueBinding="model.maxDepth"}}</td>
+                        <td>Maximum recursion depth for splitting is <b>{{model.maxDepth}}</b></td>
+                    </tr>
+                    <tr>
+                        <td>{{view SF.Slider min="0.0" max="20.0" step="any" valueBinding="model.maxDistance"}}</td>
+                        <td>Split a spline if the pattern is more than <b>{{number model.maxDistance "%.2f"}}</b> pixels away from it</td>
+                    </tr>
+                    <tr>
+                        <td>{{view SF.Slider min="0.0" max="150.0" step="any" valueBinding="model.maxImproveDistance"}}</td>
+                        <td>Skip refitting a spline if the pattern is more than <b>{{number model.maxImproveDistance "%.2f"}}</b> pixels away from it</td>
+                    </tr>
+                    <tr>
+                        <td>{{view SF.Slider min=0 max=5
+                        valueBinding="model.maxImprovements"}}</td>
+                        <td>{{number model.maxImprovements
+                            "Improve parameter values up to <b>%d</b> times before refitting"
+                            0="Do not improve parameter values"
+                            1="Improve parameter values up to <b>once</b> before refitting"
+                            2="Improve parameter values up to <b>twice</b> before refitting"}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{view SF.Slider min=1 max=20 valueBinding="model.maxRefits"}}</td>
+                        <td>{{number model.maxRefits
+                            "Refit each spline up to <b>%d</b> times before subdividing"
+                            0="Do not refit splines before subdividing"
+                            1="Refit each spline up to <b>once</b> before subdividing"
+                            2="Refit each spline up to <b>twice</b> before subdividing"}}</td>
+                    </tr>
+                </table>
+                <div>{{view SC.Checkbox title="Refit after last round of parameter improvements" valueBinding="model.wantFinalRefit"}}</div>
             </vbox>
         </hbox>
     </script>
