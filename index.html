@@ -20,7 +20,7 @@
                 <canvas class='fitter-canvas' width='600' height='600'></canvas>
                 <hbox style='width: 100%'>
                     <div class='flex'>{{number model.splines.length
-                    "%d splines" 0="No splines" 1="<b>One</b> spline"}} fitted to {{number model.pattern.length "<b>%d</b> pattern points" 0="an empty pattern" 1="<b>one</b> pattern point"}}</div>
+                    "<b>%d</b> splines" 0="No splines" 1="<b>One</b> spline"}} fitted to {{number model.pattern.length "<b>%d</b> pattern points" 0="an empty pattern" 1="<b>one</b> pattern point"}}</div>
                     <spring></spring>
                     {{#view SC.Button target="parentView.model" action="fit"}}
                         Refit
