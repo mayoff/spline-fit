@@ -90,9 +90,20 @@ a:hover { color: #036; }
     padding: 1em;
 }
 
+.fitter-canvas-box {
+    border: 1px solid black;
+    position: relative;
+}
+
+.fitter-canvas-info {
+    position: absolute;
+    padding-left: 2px;
+    padding-top: 2px;
+}
+
 .fitter-canvas {
     display: block;
-    border: 1px solid black;
+    position: relative;
 }
 
 .fitter-panel TABLE {

@@ -17,19 +17,15 @@
     <script type='text/html' data-view='SF.FitterPanel'>
         <hbox>
             <vbox class='left'>
-                <canvas class='fitter-canvas' width='600' height='600'></canvas>
-                <hbox style='width: 100%'>
-                    <div class='flex'>{{number model.splines.length
+                <div class='fitter-canvas-box'>
+                    <div class='fitter-canvas-info'>{{number model.splines.length
                     "<b>%d</b> splines" 0="No splines" 1="<b>One</b> spline"}} fitted to {{number model.pattern.length "<b>%d</b> pattern points" 0="an empty pattern" 1="<b>one</b> pattern point"}}</div>
-                    <spring></spring>
-                    {{#view SC.Button target="parentView.model" action="fit"}}
-                        Refit
-                    {{/view}}
-                </hbox>
+                    <canvas class='fitter-canvas' width='600' height='600'></canvas>
+                </div>
                 <table>
                     <tr>
                         <td>{{view SC.Checkbox title="Draw the pattern" valueBinding="shouldDrawPattern"}}</td>
-                        <td>{{view SC.Checkbox title="Draw the control polygon" valueBinding="shouldDrawControlPolygon"}}</td>
+                        <td><div style='float:right'>{{#view SC.Button target="parentView.model" action="fit"}}Refit{{/view}}</div>{{view SC.Checkbox title="Draw the control polygon" valueBinding="shouldDrawControlPolygon"}}</td>
                     </tr>
                     <tr>
                         <td>{{view SC.Checkbox title="Draw the fitted polyspline" valueBinding="shouldDrawPolySpline"}}</td>
