@@ -56,7 +56,7 @@ SF.FitterPanel = SC.View.extend({
 
     willInsertElement: function () {
         this.canvas = this.$('.fitter-canvas')[0];
-        this.canvas.addEventListener('mousedown', this.mousedownHandler);
+        this.canvas.addEventListener('mousedown', this.mousedownHandler, false);
     },
 
     _vectorForEvent: function (event) {
